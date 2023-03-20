@@ -1,0 +1,6 @@
+[submodule "lib/service-abstraction"]
+	path = lib/service-abstraction
+	url = git@code.vzlusat.cz:common/mcu/service-abstraction.git
+[submodule "lib/sally-backends"]
+	path = lib/sally-backends
+	url = git@code.vzlusat.cz:common/mcu/sally-backends.git
