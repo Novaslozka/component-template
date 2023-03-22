@@ -9,9 +9,9 @@ else
 fi
 
 echo "$BUILD_FLAGS"
-mkdir -p build
-cd build
+mkdir -p build/server
+cd build/server
 
-cmake -G "CodeBlocks - Unix Makefiles" $BUILD_FLAGS ..
+cmake -G "CodeBlocks - Unix Makefiles" $BUILD_FLAGS ../../server
 
 make -j4
