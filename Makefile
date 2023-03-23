@@ -9,5 +9,8 @@ default:
 clean:
 	./scripts/clean.sh
 
+dbg:
+	./scripts/build.sh Debug
+
 all:
-	./scripts/build.sh
+	./scripts/build.sh Linux
