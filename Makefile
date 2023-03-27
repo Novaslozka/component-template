@@ -10,7 +10,8 @@ clean:
 	./scripts/clean.sh
 
 dbg:
-	./scripts/build.sh Debug
+	./scripts/build.sh server Debug
 
 all:
-	./scripts/build.sh Linux
+	./scripts/build.sh server Linux
+	./scripts/build.sh client Linux
