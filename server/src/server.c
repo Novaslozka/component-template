@@ -1,105 +1,52 @@
 // app headers
-#include "server.h"
+#include "server/server.h"
+#include "server/server_packets.h"
 
 // standard libraries
 #include <string.h>
-#include <stdio.h>
 
 // SALLY libraries
 #include <service/service.h>
 #include <service/service_filesystem.h>
 #include <service/service_com.h>
 
-// SALLY backends - set by CMake
-extern service_fs_t FS_BACKEND;
-service_fs_t* fs = &FS_BACKEND;
-extern service_os_t OS_BACKEND;
-service_os_t* os = &OS_BACKEND;
-extern service_com_t COM_BACKEND;
-service_com_t* com_tty = &COM_BACKEND;
+// SALLY backends provided by the library user
+static service_fs_t* server_fs = NULL;
+static service_os_t* server_os = NULL;
+static service_com_t* server_com = NULL;
 
-// a helper function to log data to file
-void log_to_file(service_fs_file_handle_t file, uint8_t* data, size_t len) {
-  char buff[16];
-  for(size_t i = 0; i < len; i++) {
-    sprintf(buff, "%02X ", data[i]);
-    fs->write(file, buff, 3);
-  }
-  buff[0] = '\n';
-  fs->write(file, (void*)buff, 1);
+void server_set_backends(service_fs_t* fs, service_os_t* os, service_com_t* com) {
+  server_fs = fs;
+  server_os = os;
+  server_com = com;
 }
 
-void thread_com(void* arg) {
-  // open a file for logging
-  fs->init();
-  service_fs_file_handle_t hfile = fs->file_handle_malloc();
-  fs->open(hfile, "logfile.txt", fs->mode.WRONLY | fs->mode.CREAT | fs->mode.APPEND);
+int server_process_cmd(service_com_handle_t hcom, uint8_t* buff, size_t len) {
+  // an example of a very simple processing
+  switch(buff[0]) {
+    case SERVER_CMD_PING: {
+      // on ping, just send the defined reply
+      const char* rpl = SERVER_CMD_PING_RPL;
+      server_com->write(hcom, (void*)rpl, strlen(rpl));
+    } break;
 
-  // open a COM port
-  service_com_handle_t hcom = com_tty->com_handle_malloc();
-  service_com_conf_t conf = {
-    .speed = 460800,
-  };
-  com_tty->open(hcom, (service_com_device_t)arg, conf);
-
-  // buffer for incoming commands
-  const size_t buff_size = 64;
-  uint8_t buff[buff_size];
-
-  // process commands
-  bool keep_running = true;
-  while(keep_running) {
-    // read data from COM port
-    size_t len = com_tty->read(hcom, (void*)buff, buff_size);
-
-    if(len > 1) {
-      // log everything
-      log_to_file(hfile, buff, len);
-
-      // an example of a very simple processing
-      switch(buff[0]) {
-        case SERVER_CMD_PING: {
-          // on ping, just send the defined reply
-          const char* rpl = SERVER_CMD_PING_RPL;
-          com_tty->write(hcom, (void*)rpl, strlen(rpl));
-        } break;
-
-        case SERVER_CMD_ECHO: {
-          // on echo, sned everything backeexcept the command byte
-          uint8_t* pos = strstr(buff, SERVER_CMD_LINE_END);
-          if(pos != NULL) {
-            size_t echo_len = pos-buff-1;
-            com_tty->write(hcom, (void*)&buff[1], echo_len);
-            com_tty->write(hcom, (void*)SERVER_CMD_LINE_END, strlen(SERVER_CMD_LINE_END));
-          }
-        } break;
-
-        case SERVER_CMD_KILL:
-          // on kill, stop processing 
-          keep_running = false;
-          break;
-
-        default:
-          break;
+    case SERVER_CMD_ECHO: {
+      // on echo, sned everything backeexcept the command byte
+      uint8_t* pos = strstr(buff, SERVER_CMD_LINE_END);
+      if(pos != NULL) {
+        size_t echo_len = pos-buff-1;
+        server_com->write(hcom, (void*)&buff[1], echo_len);
+        server_com->write(hcom, (void*)SERVER_CMD_LINE_END, strlen(SERVER_CMD_LINE_END));
       }
-    }
+    } break;
+
+    case SERVER_CMD_KILL:
+      // on kill, stop processing 
+      return(SERVER_CMD_KILL);
+
+    default:
+      break;
   }
 
-  // all done, clean up
-  com_tty->close(hcom);
-  com_tty->com_handle_free(hcom);
-  fs->close(hfile);
-  fs->file_handle_free(hfile);
-}
-
-int main(int argc, char *argv[]) {
-  const char* port = "dev/ttyS0";
-
-  // set up a thread to handle incoming communicaton
-  service_os_thread_handle_t thread;
-  os->thread_create(&thread, NULL, thread_com, (void*)port);
-
-  // wait for exit
-  os->thread_wait_for(thread);
   return(0);
 }

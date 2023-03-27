@@ -1,5 +1,5 @@
-#ifndef _DRIVER_TEMPLATE_SERVER_H
-#define _DRIVER_TEMPLATE_SERVER_H
+#ifndef _DRIVER_TEMPLATE_SERVER_PACKETS_H
+#define _DRIVER_TEMPLATE_SERVER_PACKETS_H
 
 // this file defines the communication interface between client and server
 // usually, this is an implementation of the device ICD

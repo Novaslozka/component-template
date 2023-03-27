@@ -1,2 +1,8 @@
+# build output directory
 build/
+
+# VScode stuff
 .vscode/
+
+# socat-emulated tty ports
+dev/
