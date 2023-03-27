@@ -2,6 +2,11 @@
 
 set -e
 
+if [[ "$#" -lt 2 ]]; then
+  echo "Usage: $0 <server/client> <platform> [build arguments]"
+  exit 1
+fi
+
 # class is either server or client
 CLASS="$1"
 
