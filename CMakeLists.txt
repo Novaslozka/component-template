@@ -14,6 +14,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Linux" OR CMAKE_BUILD_TYPE STREQUAL "Debug")
     "lib/sally-backends/fs/posix_backend.c"
     "lib/sally-backends/os/posix_backend.c"
     "lib/sally-backends/com/posix_tty_backend.c"
+    "lib/sally-backends/com/memcom_backend.c"
   )
 
   # (2.2) set the definitions that can be used in code
@@ -33,8 +34,8 @@ else()
 endif()
 
 # check the build class
-if(NOT((CMAKE_BUILD_CLASS STREQUAL "client") OR (CMAKE_BUILD_CLASS STREQUAL "server")))
-  message(FATAL_ERROR "${CMAKE_BUILD_CLASS} is not a known build class (must be \"server\" or \"client\")")
+if(NOT((CMAKE_BUILD_CLASS STREQUAL "client") OR (CMAKE_BUILD_CLASS STREQUAL "server") OR (CMAKE_BUILD_CLASS STREQUAL "combined")))
+  message(FATAL_ERROR "${CMAKE_BUILD_CLASS} is not a known build class (must be \"server\" or \"client\" or \"combined\")")
 endif()
 
 # user config is done, create the project
@@ -96,6 +97,7 @@ if(${BUILD_AUTOTEST})
 endif()
 
 # for client, we also have to link the server library, as it contains packet definitions
+# this assumes server libraries are already built!
 if(${CMAKE_BUILD_CLASS} STREQUAL "client")
   set(SERVER_LIB_HEADER "server/include")
   set(SERVER_LIB ${CMAKE_CURRENT_BINARY_DIR}/../server-${CMAKE_BUILD_TYPE}/lib${DRIVER_NAME}-server.a)
@@ -105,5 +107,22 @@ if(${CMAKE_BUILD_CLASS} STREQUAL "client")
   if(${BUILD_AUTOTEST})
     target_include_directories(${AUTOTEST_EXE} PRIVATE ${SERVER_LIB_HEADER})
     target_link_libraries(${AUTOTEST_EXE} ${SERVER_LIB})
+  endif()
+endif()
+
+# for combined build, link both client and server
+# this assumes both server and client libraries are already built!
+if(${CMAKE_BUILD_CLASS} STREQUAL "combined")
+  set(SERVER_LIB_HEADER "server/include")
+  set(CLIENT_LIB_HEADER "client/include")
+  set(SERVER_LIB ${CMAKE_CURRENT_BINARY_DIR}/../server-${CMAKE_BUILD_TYPE}/lib${DRIVER_NAME}-server.a)
+  set(CLIENT_LIB ${CMAKE_CURRENT_BINARY_DIR}/../client-${CMAKE_BUILD_TYPE}/lib${DRIVER_NAME}-client.a)
+
+  target_include_directories(${STATIC_LIB} PRIVATE ${SERVER_LIB_HEADER} ${CLIENT_LIB_HEADER})
+  target_link_libraries(${STATIC_LIB} ${SERVER_LIB} ${CLIENT_LIB})
+
+  if(${BUILD_AUTOTEST})
+    target_include_directories(${AUTOTEST_EXE} PRIVATE ${SERVER_LIB_HEADER} ${CLIENT_LIB_HEADER})
+    target_link_libraries(${AUTOTEST_EXE} ${SERVER_LIB} ${CLIENT_LIB})
   endif()
 endif()

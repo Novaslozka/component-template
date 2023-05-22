@@ -6,3 +6,6 @@ build/
 
 # socat-emulated tty ports
 dev/
+
+# logging output
+logs/
