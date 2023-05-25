@@ -47,7 +47,7 @@ void thread_server(void* arg) {
   // open a file for logging
   fs->init();
   service_fs_file_handle_t hfile = fs->file_handle_malloc();
-  fs->open(hfile, "logs/logfile_server.txt", fs->mode.WRONLY | fs->mode.CREAT | fs->mode.APPEND);
+  fs->open(hfile, "autotest/logs/logfile_server.txt", fs->mode.WRONLY | fs->mode.CREAT | fs->mode.APPEND);
 
   service_com_handle_t hcom = com->com_handle_malloc();
   int port = COM_PORT_SERVER;
