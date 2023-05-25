@@ -159,7 +159,7 @@ test_client_teardown(void* fixture) {
 static MunitTest test_suite_tests[] = {
   // name - test - setup - teardown - options - params
   { (char*) "/driver/ping", test_ping, test_client_setup, test_client_teardown, MUNIT_TEST_OPTION_NONE, NULL },
-  { (char*) "/driver/ping", test_echo, test_client_setup, test_client_teardown, MUNIT_TEST_OPTION_NONE, NULL },
+  { (char*) "/driver/echo", test_echo, test_client_setup, test_client_teardown, MUNIT_TEST_OPTION_NONE, NULL },
   { NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL }
 };
 
