@@ -22,10 +22,13 @@ service_os_t* os = &OS_BACKEND;
 extern service_com_t backend_memcom;
 service_com_t* com = &backend_memcom;
 
+// flag to signal server startup is finished
 volatile bool server_ready = false;
 
-#define RAMBUFF_PORT_CLIENT_TO_SERVER         (0)
-#define RAMBUFF_PORT_SERVER_TO_CLIENT         (1)
+// which COM ports to use for server and client
+// memcom addresses ports as integers, ports N and N-1 are connected together
+#define COM_PORT_CLIENT         (0)
+#define COM_PORT_SERVER         (1)
 
 // a helper function to log data to file
 void log_to_file(service_fs_file_handle_t file, uint8_t* data, size_t len) {
@@ -45,16 +48,10 @@ void thread_server(void* arg) {
   fs->init();
   service_fs_file_handle_t hfile = fs->file_handle_malloc();
   fs->open(hfile, "logs/logfile_server.txt", fs->mode.WRONLY | fs->mode.CREAT | fs->mode.APPEND);
-  
-  // open emulated COM port - client to server
-  service_com_handle_t hcom_from_client = com->com_handle_malloc();
-  int port = RAMBUFF_PORT_CLIENT_TO_SERVER;
-  com->open(hcom_from_client, (service_com_device_t)&port, conf);
-  
-  // open emulated COM port - server to client
-  service_com_handle_t hcom_to_client = com->com_handle_malloc();
-  port = RAMBUFF_PORT_SERVER_TO_CLIENT;
-  com->open(hcom_to_client, (service_com_device_t)&port, conf);
+
+  service_com_handle_t hcom = com->com_handle_malloc();
+  int port = COM_PORT_SERVER;
+  com->open(hcom, (service_com_device_t)&port, conf);
 
   // buffer for incoming commands
   const size_t buff_size = 64;
@@ -66,9 +63,9 @@ void thread_server(void* arg) {
   bool keep_running = true;
   while(keep_running) {
     // read data from COM port
-    size_t len = com->available(hcom_from_client);
+    size_t len = com->available(hcom);
     if(len > 0) {
-      com->read(hcom_from_client, (void*)buff, len);
+      com->read(hcom, (void*)buff, len);
     } else {
       os->thread_delay(1);
     }
@@ -77,7 +74,7 @@ void thread_server(void* arg) {
       // log everything
       log_to_file(hfile, buff, len);
 
-      int ret = server_process_cmd(hcom_to_client, buff, len);
+      int ret = server_process_cmd(hcom, buff, len);
       if(ret == SERVER_CMD_KILL) {
         keep_running = false;
       }
@@ -85,26 +82,18 @@ void thread_server(void* arg) {
   }
 
   // all done, clean up
-  com->close(hcom_from_client);
-  com->close(hcom_to_client);
-  com->com_handle_free(hcom_from_client);
-  com->com_handle_free(hcom_to_client);
+  com->close(hcom);
+  com->com_handle_free(hcom);
   fs->close(hfile);
   fs->file_handle_free(hfile);
 }
 
 void thread_client(void* arg) {
   service_com_conf_t conf = { .speed = 0 };
-  
-  // open emulated COM port - client to server
-  service_com_handle_t hcom_to_server = com->com_handle_malloc();
-  int port = RAMBUFF_PORT_CLIENT_TO_SERVER;
-  com->open(hcom_to_server, (service_com_device_t)&port, conf);
-  
-  // open emulated COM port - server to client
-  service_com_handle_t hcom_from_server = com->com_handle_malloc();
-  port = RAMBUFF_PORT_SERVER_TO_CLIENT;
-  com->open(hcom_from_server, (service_com_device_t)&port, conf);
+
+  service_com_handle_t hcom = com->com_handle_malloc();
+  int port = COM_PORT_CLIENT;
+  com->open(hcom, (service_com_device_t)&port, conf);
 
   // wait until the server is ready
   while(!server_ready) {
@@ -114,20 +103,18 @@ void thread_client(void* arg) {
   // send some server requests
   for(uint8_t i = 0; i < 10; i++) {
     // send a ping
-    client_cmd_send(hcom_to_server, SERVER_CMD_PING, NULL, 0);
+    client_cmd_send(hcom, SERVER_CMD_PING, NULL, 0);
 
     // try to get a reply
     uint8_t ping_buff[16];
-    if(client_rpl_get(hcom_from_server, ping_buff, strlen(SERVER_CMD_PING_RPL)) > 0) {
+    if(client_rpl_get(hcom, ping_buff, strlen(SERVER_CMD_PING_RPL)) > 0) {
       printf("Ping #%d got reply: %s\n", i, ping_buff);
     }
     os->thread_delay(10);
   }
 
-  com->close(hcom_from_server);
-  com->close(hcom_to_server);
-  com->com_handle_free(hcom_from_server);
-  com->com_handle_free(hcom_to_server);
+  com->close(hcom);
+  com->com_handle_free(hcom);
 }
 
 int main(int argc, char *argv[]) {
