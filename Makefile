@@ -31,3 +31,4 @@ dbg-test:
 	./scripts/build.sh server Debug
 	./scripts/build.sh client Debug
 	./scripts/build.sh combined Debug
+	gdb ./build/combined-Debug/driver-templ-combined-bin
