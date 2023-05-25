@@ -127,6 +127,16 @@ test_echo(const MunitParameter params[], void* fixture) {
   return(MUNIT_OK);
 }
 
+static MunitResult
+test_kill(const MunitParameter params[], void* fixture) {
+  service_com_handle_t hcom = (service_com_handle_t)fixture;
+
+  client_cmd_send(hcom, SERVER_CMD_KILL, NULL, 0);
+  size_t ret = client_rpl_get(hcom, NULL, 0);
+  munit_assert_int(ret, <=, 0);
+  return(MUNIT_OK);
+}
+
 static void*
 test_client_setup(const MunitParameter params[], void* user_data) {
   (void)params;
@@ -160,6 +170,7 @@ static MunitTest test_suite_tests[] = {
   // name - test - setup - teardown - options - params
   { (char*) "/driver/ping", test_ping, test_client_setup, test_client_teardown, MUNIT_TEST_OPTION_NONE, NULL },
   { (char*) "/driver/echo", test_echo, test_client_setup, test_client_teardown, MUNIT_TEST_OPTION_NONE, NULL },
+  { (char*) "/driver/kill", test_kill, test_client_setup, test_client_teardown, MUNIT_TEST_OPTION_NONE, NULL },
   { NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL }
 };
 
