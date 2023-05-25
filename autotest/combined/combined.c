@@ -12,6 +12,9 @@
 #include <service/service_filesystem.h>
 #include <service/service_com.h>
 
+// munit testing framework
+#include "munit.h"
+
 // SALLY backends - set by CMake
 extern service_fs_t FS_BACKEND;
 service_fs_t* fs = &FS_BACKEND;
@@ -88,9 +91,51 @@ void thread_server(void* arg) {
   fs->file_handle_free(hfile);
 }
 
-void thread_client(void* arg) {
-  service_com_conf_t conf = { .speed = 0 };
+static MunitResult
+test_ping(const MunitParameter params[], void* fixture) {
+  service_com_handle_t hcom = (service_com_handle_t)fixture;
 
+  // send a ping
+  uint8_t ping_buff[16];
+  client_cmd_send(hcom, SERVER_CMD_PING, NULL, 0);
+
+  // get the reply
+  size_t ret = client_rpl_get(hcom, ping_buff, strlen(SERVER_CMD_PING_RPL));
+
+  // check we have the data
+  munit_assert_int(ret, ==, strlen(SERVER_CMD_PING_RPL));
+  ping_buff[ret] = '\0';
+  munit_assert_string_equal(ping_buff, SERVER_CMD_PING_RPL);
+
+  return(MUNIT_OK);
+}
+
+static MunitResult
+test_echo(const MunitParameter params[], void* fixture) {
+  service_com_handle_t hcom = (service_com_handle_t)fixture;
+
+  // the extra newline is added just to make comparison with the reply easier
+  // it's actually sent without it
+  char echo_out_buff[] = "Echo this!" SERVER_CMD_LINE_END;
+  client_cmd_send(hcom, SERVER_CMD_ECHO, (uint8_t*)echo_out_buff, strlen(echo_out_buff) - 2);
+
+  char echo_in_buff[16];
+  size_t ret = client_rpl_get(hcom, (uint8_t*)echo_in_buff, strlen(echo_out_buff));
+  munit_assert_int(ret, ==, strlen(echo_out_buff));
+  echo_in_buff[ret] = '\0';
+  munit_assert_string_equal(echo_in_buff, echo_out_buff);
+  return(MUNIT_OK);
+}
+
+static void*
+test_client_setup(const MunitParameter params[], void* user_data) {
+  (void)params;
+  (void)user_data;
+
+  client_set_backends(fs, os, com);
+
+  // open port
+  service_com_conf_t conf = { .speed = 0 };
   service_com_handle_t hcom = com->com_handle_malloc();
   int port = COM_PORT_CLIENT;
   com->open(hcom, (service_com_device_t)&port, conf);
@@ -100,37 +145,46 @@ void thread_client(void* arg) {
     os->thread_delay(100);
   }
 
-  // send some server requests
-  for(uint8_t i = 0; i < 10; i++) {
-    // send a ping
-    client_cmd_send(hcom, SERVER_CMD_PING, NULL, 0);
+  // return the COM handle, this will be provided to test
+  return((void*)hcom);
+}
 
-    // try to get a reply
-    uint8_t ping_buff[16];
-    if(client_rpl_get(hcom, ping_buff, strlen(SERVER_CMD_PING_RPL)) > 0) {
-      printf("Ping #%d got reply: %s\n", i, ping_buff);
-    }
-    os->thread_delay(10);
-  }
-
+static void
+test_client_teardown(void* fixture) {
+  service_com_handle_t hcom = (service_com_handle_t)fixture;
   com->close(hcom);
   com->com_handle_free(hcom);
 }
 
-int main(int argc, char *argv[]) {
+static MunitTest test_suite_tests[] = {
+  // name - test - setup - teardown - options - params
+  { (char*) "/driver/ping", test_ping, test_client_setup, test_client_teardown, MUNIT_TEST_OPTION_NONE, NULL },
+  { (char*) "/driver/ping", test_echo, test_client_setup, test_client_teardown, MUNIT_TEST_OPTION_NONE, NULL },
+  { NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL }
+};
+
+// see https://github.com/nemequ/munit
+static const MunitSuite test_suite = {
+  // test suite name
+  (char*) "top",
+  // array of the tests
+  test_suite_tests,
+  // additional test suites
+  NULL,
+  // number of iterations per test
+  1,
+  // defaults options
+  MUNIT_SUITE_OPTION_NONE
+};
+
+int main(int argc, char *argv[MUNIT_ARRAY_PARAM(argc + 1)]) {
   // set backends for client and server
-  client_set_backends(fs, os, com);
   server_set_backends(fs, os, com);
 
   // set up server thread to handle communicaton coming from the client
   service_os_thread_handle_t th_server;
   os->thread_create(&th_server, NULL, thread_server, NULL);
 
-  // set up client thread to do the testing
-  service_os_thread_handle_t th_client;
-  os->thread_create(&th_client, NULL, thread_client, NULL);
-
-  // wait for exit
-  os->thread_wait_for(th_client);
-  return(0);
+  // run the tests
+  return(munit_suite_main(&test_suite, NULL, argc, argv));
 }

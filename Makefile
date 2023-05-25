@@ -24,11 +24,11 @@ test:
 	./scripts/build.sh client Linux
 	./scripts/build.sh combined Linux
 # now launch the test
-	./build/combined-Linux/driver-templ-combined-bin
+	./build/combined-Linux/driver-templ-combined-bin --no-fork
 
 dbg-test:
 # build server and client, we need the libraries for the autotesting
 	./scripts/build.sh server Debug
 	./scripts/build.sh client Debug
 	./scripts/build.sh combined Debug
-	gdb ./build/combined-Debug/driver-templ-combined-bin
+	gdb --args ./build/combined-Debug/driver-templ-combined-bin --no-fork

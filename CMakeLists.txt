@@ -50,13 +50,16 @@ endif()
 # set sources for library and executable
 file(GLOB_RECURSE LIB_SOURCES "${CMAKE_BUILD_CLASS}/src/${CMAKE_BUILD_CLASS}.c")
 if(${BUILD_AUTOTEST})
-  file(GLOB_RECURSE BIN_SOURCES "autotest/${CMAKE_BUILD_CLASS}/${CMAKE_BUILD_CLASS}.c")
+  file(GLOB_RECURSE BIN_SOURCES
+    "autotest/${CMAKE_BUILD_CLASS}/${CMAKE_BUILD_CLASS}.c"
+    "autotest/munit/munit.c")
 endif()
 
 # add both targets
 add_library(${STATIC_LIB} STATIC ${LIB_SOURCES})
 if(${BUILD_AUTOTEST})
   add_executable(${AUTOTEST_EXE} ${BIN_SOURCES})
+  target_include_directories(${AUTOTEST_EXE} PRIVATE "autotest/munit")
 endif()
 
 # set common libraries
