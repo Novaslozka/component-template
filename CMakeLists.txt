@@ -38,6 +38,20 @@ if(NOT((CMAKE_BUILD_CLASS STREQUAL "client") OR (CMAKE_BUILD_CLASS STREQUAL "ser
   message(FATAL_ERROR "${CMAKE_BUILD_CLASS} is not a known build class (must be \"server\" or \"client\" or \"combined\")")
 endif()
 
+# set paths to the different build classes
+# the path is different from class on purpose to avoid confusion
+if(CMAKE_BUILD_CLASS STREQUAL "client")
+  set(CMAKE_BUILD_CLASS_PATH "cli")
+endif()
+
+if(CMAKE_BUILD_CLASS STREQUAL "server")
+  set(CMAKE_BUILD_CLASS_PATH "srv")
+endif()
+
+if(CMAKE_BUILD_CLASS STREQUAL "combined")
+  set(CMAKE_BUILD_CLASS_PATH "comb")
+endif()
+
 # user config is done, create the project
 project(${DRIVER_NAME}-${CMAKE_BUILD_CLASS})
 
@@ -48,10 +62,10 @@ if(${BUILD_AUTOTEST})
 endif()
 
 # set sources for library and executable
-file(GLOB_RECURSE LIB_SOURCES "${CMAKE_BUILD_CLASS}/src/${CMAKE_BUILD_CLASS}.c")
+file(GLOB_RECURSE LIB_SOURCES "${CMAKE_BUILD_CLASS_PATH}/src/*.c")
 if(${BUILD_AUTOTEST})
   file(GLOB_RECURSE BIN_SOURCES
-    "autotest/${CMAKE_BUILD_CLASS}/${CMAKE_BUILD_CLASS}.c"
+    "autotest/${CMAKE_BUILD_CLASS_PATH}/*.c"
     "autotest/munit/munit.c")
 endif()
 
@@ -85,8 +99,9 @@ message("Autotest:    ${BUILD_AUTOTEST}")
 
 # set include dirs
 set(INCLUDE_DIRS 
-  PRIVATE "${CMAKE_BUILD_CLASS}/src"
-  PRIVATE "${CMAKE_BUILD_CLASS}/include"
+  PRIVATE "${CMAKE_BUILD_CLASS_PATH}/src"
+  PRIVATE "${CMAKE_BUILD_CLASS_PATH}/include"
+  PRIVATE "common/include"
 )
 
 # link the common libs to the static lib
@@ -99,25 +114,11 @@ if(${BUILD_AUTOTEST})
   target_link_libraries(${AUTOTEST_EXE} ${LIBS_COMMON} ${STATIC_LIB})
 endif()
 
-# for client, we also have to link the server library, as it contains packet definitions
-# this assumes server libraries are already built!
-if(${CMAKE_BUILD_CLASS} STREQUAL "client")
-  set(SERVER_LIB_HEADER "server/include")
-  set(SERVER_LIB ${CMAKE_CURRENT_BINARY_DIR}/../server-${CMAKE_BUILD_TYPE}/lib${DRIVER_NAME}-server.a)
-  target_include_directories(${STATIC_LIB} PRIVATE ${SERVER_LIB_HEADER})
-  target_link_libraries(${STATIC_LIB} ${SERVER_LIB})
-
-  if(${BUILD_AUTOTEST})
-    target_include_directories(${AUTOTEST_EXE} PRIVATE ${SERVER_LIB_HEADER})
-    target_link_libraries(${AUTOTEST_EXE} ${SERVER_LIB})
-  endif()
-endif()
-
 # for combined build, link both client and server
 # this assumes both server and client libraries are already built!
 if(${CMAKE_BUILD_CLASS} STREQUAL "combined")
-  set(SERVER_LIB_HEADER "server/include")
-  set(CLIENT_LIB_HEADER "client/include")
+  set(SERVER_LIB_HEADER "srv/include")
+  set(CLIENT_LIB_HEADER "cli/include")
   set(SERVER_LIB ${CMAKE_CURRENT_BINARY_DIR}/../server-${CMAKE_BUILD_TYPE}/lib${DRIVER_NAME}-server.a)
   set(CLIENT_LIB ${CMAKE_CURRENT_BINARY_DIR}/../client-${CMAKE_BUILD_TYPE}/lib${DRIVER_NAME}-client.a)
 

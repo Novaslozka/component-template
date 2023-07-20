@@ -1,7 +1,6 @@
 // static library headers
-#include <client/client.h>
-#include <server/server.h>
-#include <server/server_packets.h>
+#include <cli/client.h>
+#include <srv/server.h>
 
 // standard libraries
 #include <string.h>
@@ -11,6 +10,9 @@
 #include <service/service.h>
 #include <service/service_filesystem.h>
 #include <service/service_com.h>
+
+// headers shared for both client and server
+#include "packets.h"
 
 // munit testing framework
 #include "munit.h"
@@ -78,7 +80,7 @@ void thread_server(void* arg) {
       log_to_file(hfile, buff, len);
 
       int ret = server_process_cmd(hcom, buff, len);
-      if(ret == SERVER_CMD_KILL) {
+      if(ret == DRIVER_TEMPLATE_CMD_KILL) {
         keep_running = false;
       }
     }
@@ -97,15 +99,15 @@ test_ping(const MunitParameter params[], void* fixture) {
 
   // send a ping
   uint8_t ping_buff[16];
-  client_cmd_send(hcom, SERVER_CMD_PING, NULL, 0);
+  client_cmd_send(hcom, DRIVER_TEMPLATE_CMD_PING, NULL, 0);
 
   // get the reply
-  size_t ret = client_rpl_get(hcom, ping_buff, strlen(SERVER_CMD_PING_RPL));
+  size_t ret = client_rpl_get(hcom, ping_buff, strlen(DRIVER_TEMPLATE_CMD_PING_RPL));
 
   // check we have the data
-  munit_assert_int(ret, ==, strlen(SERVER_CMD_PING_RPL));
+  munit_assert_int(ret, ==, strlen(DRIVER_TEMPLATE_CMD_PING_RPL));
   ping_buff[ret] = '\0';
-  munit_assert_string_equal(ping_buff, SERVER_CMD_PING_RPL);
+  munit_assert_string_equal(ping_buff, DRIVER_TEMPLATE_CMD_PING_RPL);
 
   return(MUNIT_OK);
 }
@@ -116,8 +118,8 @@ test_echo(const MunitParameter params[], void* fixture) {
 
   // the extra newline is added just to make comparison with the reply easier
   // it's actually sent without it
-  char echo_out_buff[] = "Echo this!" SERVER_CMD_LINE_END;
-  client_cmd_send(hcom, SERVER_CMD_ECHO, (uint8_t*)echo_out_buff, strlen(echo_out_buff) - 2);
+  char echo_out_buff[] = "Echo this!" DRIVER_TEMPLATE_CMD_LINE_END;
+  client_cmd_send(hcom, DRIVER_TEMPLATE_CMD_ECHO, (uint8_t*)echo_out_buff, strlen(echo_out_buff) - 2);
 
   char echo_in_buff[16];
   size_t ret = client_rpl_get(hcom, (uint8_t*)echo_in_buff, strlen(echo_out_buff));
@@ -131,7 +133,7 @@ static MunitResult
 test_kill(const MunitParameter params[], void* fixture) {
   service_com_handle_t hcom = (service_com_handle_t)fixture;
 
-  client_cmd_send(hcom, SERVER_CMD_KILL, NULL, 0);
+  client_cmd_send(hcom, DRIVER_TEMPLATE_CMD_KILL, NULL, 0);
   size_t ret = client_rpl_get(hcom, NULL, 0);
   munit_assert_int(ret, <=, 0);
   return(MUNIT_OK);

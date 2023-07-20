@@ -1,6 +1,5 @@
 // static library headers
-#include <server/server.h>
-#include <server/server_packets.h>
+#include <srv/server.h>
 
 // standard libraries
 #include <string.h>
@@ -10,6 +9,9 @@
 #include <service/service.h>
 #include <service/service_filesystem.h>
 #include <service/service_com.h>
+
+// headers shared for both client and server
+#include "packets.h"
 
 // SALLY backends - set by CMake
 extern service_fs_t FS_BACKEND;
@@ -58,7 +60,7 @@ void thread_com(void* arg) {
       log_to_file(hfile, buff, len);
 
       int ret = server_process_cmd(hcom, buff, len);
-      if(ret == SERVER_CMD_KILL) {
+      if(ret == DRIVER_TEMPLATE_CMD_KILL) {
         keep_running = false;
       }
     }

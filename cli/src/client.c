@@ -1,5 +1,5 @@
 // app headers
-#include "client/client.h"
+#include "cli/client.h"
 
 // standard libraries
 #include <string.h>
@@ -10,8 +10,8 @@
 #include <service/service_filesystem.h>
 #include <service/service_com.h>
 
-// server packet definitions
-#include <server/server_packets.h>
+// headers shared for both client and server
+#include "packets.h"
 
 // SALLY backends provided by the library user
 static service_fs_t* client_fs = NULL;
@@ -34,8 +34,8 @@ void client_cmd_send(service_com_handle_t hcom, uint8_t cmd_id, uint8_t* data, u
     memcpy(&buff[1], data, data_len);
   }
 
-  memcpy(&buff[1 + data_len], SERVER_CMD_LINE_END, strlen(SERVER_CMD_LINE_END));
-  client_com->write(hcom, buff, 1 + data_len + strlen(SERVER_CMD_LINE_END));
+  memcpy(&buff[1 + data_len], DRIVER_TEMPLATE_CMD_LINE_END, strlen(DRIVER_TEMPLATE_CMD_LINE_END));
+  client_com->write(hcom, buff, 1 + data_len + strlen(DRIVER_TEMPLATE_CMD_LINE_END));
 }
 
 size_t client_rpl_get(service_com_handle_t hcom, uint8_t* buff, size_t target_len) {

@@ -23,7 +23,8 @@ test:
 	./scripts/build.sh server Linux
 	./scripts/build.sh client Linux
 	./scripts/build.sh combined Linux
-# now launch the test
+# now launch the test - ran with --no-fork option
+# so that munit doesn't try to execute tests in child processes
 	./build/combined-Linux/driver-templ-combined-bin --no-fork
 
 dbg-test:
