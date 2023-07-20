@@ -59,8 +59,7 @@ void thread_server(void* arg) {
   com->open(hcom, (service_com_device_t)&port, conf);
 
   // buffer for incoming commands
-  const size_t buff_size = 64;
-  uint8_t buff[buff_size];
+  uint8_t buff[64] = { 0 };
 
   server_ready = true;
 
@@ -98,7 +97,7 @@ test_ping(const MunitParameter params[], void* fixture) {
   service_com_handle_t hcom = (service_com_handle_t)fixture;
 
   // send a ping
-  uint8_t ping_buff[16];
+  uint8_t ping_buff[16] = { 0 };
   client_cmd_send(hcom, DRIVER_TEMPLATE_CMD_PING, NULL, 0);
 
   // get the reply
@@ -121,7 +120,7 @@ test_echo(const MunitParameter params[], void* fixture) {
   char echo_out_buff[] = "Echo this!" DRIVER_TEMPLATE_CMD_LINE_END;
   client_cmd_send(hcom, DRIVER_TEMPLATE_CMD_ECHO, (uint8_t*)echo_out_buff, strlen(echo_out_buff) - 2);
 
-  char echo_in_buff[16];
+  char echo_in_buff[16] = { 0 };
   size_t ret = client_rpl_get(hcom, (uint8_t*)echo_in_buff, strlen(echo_out_buff));
   munit_assert_int(ret, ==, strlen(echo_out_buff));
   echo_in_buff[ret] = '\0';

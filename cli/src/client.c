@@ -26,8 +26,7 @@ void client_set_backends(service_fs_t* fs, service_os_t* os, service_com_t* com)
 
 // the following command/reply functions are for illustration only!
 void client_cmd_send(service_com_handle_t hcom, uint8_t cmd_id, uint8_t* data, uint8_t data_len) {
-  const size_t buff_size = 64;
-  uint8_t buff[buff_size];
+  uint8_t buff[64] = { 0 };
   buff[0] = cmd_id;
 
   if((data != NULL) && (data_len > 0)) {

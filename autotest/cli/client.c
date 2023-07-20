@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
   client_cmd_send(hcom, DRIVER_TEMPLATE_CMD_ECHO, (uint8_t*)msg, strlen(msg));
 
   // try to get a reply
-  uint8_t echo_buff[32];
+  uint8_t echo_buff[32] = { 0 };
   if(client_rpl_get(hcom, echo_buff, strlen(msg) + strlen(DRIVER_TEMPLATE_CMD_LINE_END)) > 0) {
     printf("Echo got reply: %s\n", echo_buff);
   }

@@ -46,14 +46,13 @@ void thread_com(void* arg) {
   com->open(hcom, (service_com_device_t)arg, conf);
 
   // buffer for incoming commands
-  const size_t buff_size = 64;
-  uint8_t buff[buff_size];
+  uint8_t buff[64] = { 0 };
 
   // process commands
   bool keep_running = true;
   while(keep_running) {
     // read data from COM port
-    size_t len = com->read(hcom, (void*)buff, buff_size);
+    size_t len = com->read(hcom, (void*)buff, 64);
 
     if(len > 1) {
       // log everything
