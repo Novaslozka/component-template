@@ -45,7 +45,18 @@ The output of compilation are typically two statically linked libraries of the c
 
 It is also possible to build the client as a dynamically linked library. This is typicaly used when the client is used as a commandline plugin into VCOM. To do this, `BUILD_SHARED` must be enabled in CMake. Keep in mind that when building a shared library, all its dependencies must be built shared as well!
 
+When building client with commandline control, `BUILD_CMDLINE` must be enabled in CMake.
+
 ## Abstraction layers
 The driver client and software may run on various platforms - at least the developer PC, CI dockers and target flight platforms are foreseen. Therefore, it is necessary to use abstraction layers to decouple the implementations from specific hardware or OS.
 
 To abstract filesystem, OS operations and COM ports, the [SALLY abstraction](https://code.vzlusat.cz/common/mcu/service-abstraction) layer may be used. Currently implemented backends may be found in [this repository](https://code.vzlusat.cz/common/mcu/sally-backends).
+
+## Using this template
+To use this template:
+1. Fork it into the relevant GitLab namespace/group.
+2. Follow the steps highlighted in the CMake file (set the name, create all arelevant configurations etc.).
+3. Add your client and service implementations and headers. It is important to keep consistent naming for the headers, e.g. public headers for DataKeeper client should be in `cli/include/dk`. The same applies for server and common files.
+4. Make sure that everything which is common to both client and the server is kept in `common`. Tyically, this includes lpldgen definitions and generated files, communication interface definitions, device-specific checksum calculations etc.
+5. Write tests - at least the combined unit test for each client-side command that is implemented.
+6. Add the driver as a submodule to the relevant projects - typically this will be at least VCOM and the on-board software. From this higher-level project's CMake, configure all the options and then use the client/server libraries in its code, either by using the client C-API/commands, or by creating the service by using SALLY.

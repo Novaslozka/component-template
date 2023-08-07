@@ -4,11 +4,11 @@ cmake_minimum_required(VERSION 3.18)
 set(DRIVER_NAME driver-templ)
 
 # (1) enable SALLY CSP support, if needed
-#     you will have to add libcsp as submodule in ../lib!
+#     you will have to make sure that libcsp is available!
 #set(SERVICE_CSP ON)
 
 # (2) create the platform-specific configuration for release and debug
-if(CMAKE_BUILD_TYPE STREQUAL "Linux" OR CMAKE_BUILD_TYPE STREQUAL "Debug")
+if(CMAKE_BUILD_PLATFORM STREQUAL "Linux")
   # (2.1) set platform-specific backend sources
   set(BACKEND_SOURCES
     "lib/sally-backends/fs/posix_backend.c"
@@ -29,8 +29,11 @@ if(CMAKE_BUILD_TYPE STREQUAL "Linux" OR CMAKE_BUILD_TYPE STREQUAL "Debug")
 
   # (2.4) enable building autotest binaries for this platform
   set(BUILD_AUTOTEST ON)
+
+  # (2.5) disable building commandline commands for this platform
+  set(BUILD_CMDLINE OFF)
 else()
-  message(FATAL_ERROR "${CMAKE_BUILD_TYPE} is not a known build type")
+  message(FATAL_ERROR "${CMAKE_BUILD_PLATFORM} is not a known build type")
 endif()
 
 # check the build class
@@ -58,6 +61,9 @@ project(${DRIVER_NAME}-${CMAKE_BUILD_CLASS})
 # set name for the static library and autotest executable
 set(STATIC_LIB ${PROJECT_NAME})
 if(${BUILD_AUTOTEST})
+  # SALLY should be provided by the higher-level user (e.g. VCOM or OBSW),
+  # unless this is autotest, where there is no higher-level user
+  add_subdirectory("lib/service-abstraction")
   set(AUTOTEST_EXE ${PROJECT_NAME}-bin)
 endif()
 
@@ -69,6 +75,12 @@ if(${BUILD_AUTOTEST})
     "autotest/munit/munit.c")
 endif()
 
+# if client commands are to be built, add them to sources
+if(${BUILD_CMDLINE})
+  file(GLOB_RECURSE CMD_SOURCES "cli/cmd/*.c")
+  list(APPEND LIB_SOURCES ${CMD_SOURCES})
+endif()
+
 # add both targets
 add_library(${STATIC_LIB} STATIC ${LIB_SOURCES})
 if(${BUILD_AUTOTEST})
@@ -77,7 +89,6 @@ if(${BUILD_AUTOTEST})
 endif()
 
 # set common libraries
-add_subdirectory("lib" "build/lib")
 set(LIBS_COMMON srv-abs)
 
 # set user-defined properties for static library 
@@ -93,9 +104,10 @@ if(${BUILD_AUTOTEST})
 endif()
 
 # let the user know what is being built
-message("Build class: ${CMAKE_BUILD_CLASS}")
-message("Build type:  ${CMAKE_BUILD_TYPE}")
-message("Autotest:    ${BUILD_AUTOTEST}")
+message("Driver:          ${DRIVER_NAME}")
+message("Build class:     ${CMAKE_BUILD_CLASS}")
+message("Build platform:  ${CMAKE_BUILD_PLATFORM}")
+message("Autotest:        ${BUILD_AUTOTEST}")
 
 # set include dirs
 set(INCLUDE_DIRS 
@@ -114,13 +126,19 @@ if(${BUILD_AUTOTEST})
   target_link_libraries(${AUTOTEST_EXE} ${LIBS_COMMON} ${STATIC_LIB})
 endif()
 
+# if client commands are to be built, add the commands headers and link libcommands
+if(${BUILD_CMDLINE})
+  target_include_directories(${STATIC_LIB} PUBLIC "cli/include")
+  target_link_libraries(${STATIC_LIB} commands)
+endif()
+
 # for combined build, link both client and server
 # this assumes both server and client libraries are already built!
 if(${CMAKE_BUILD_CLASS} STREQUAL "combined")
   set(SERVER_LIB_HEADER "srv/include")
   set(CLIENT_LIB_HEADER "cli/include")
-  set(SERVER_LIB ${CMAKE_CURRENT_BINARY_DIR}/../server-${CMAKE_BUILD_TYPE}/lib${DRIVER_NAME}-server.a)
-  set(CLIENT_LIB ${CMAKE_CURRENT_BINARY_DIR}/../client-${CMAKE_BUILD_TYPE}/lib${DRIVER_NAME}-client.a)
+  set(SERVER_LIB ${CMAKE_CURRENT_BINARY_DIR}/../server-${CMAKE_BUILD_PLATFORM}/lib${DRIVER_NAME}-server.a)
+  set(CLIENT_LIB ${CMAKE_CURRENT_BINARY_DIR}/../client-${CMAKE_BUILD_PLATFORM}/lib${DRIVER_NAME}-client.a)
 
   target_include_directories(${STATIC_LIB} PRIVATE ${SERVER_LIB_HEADER} ${CLIENT_LIB_HEADER})
   target_link_libraries(${STATIC_LIB} ${SERVER_LIB} ${CLIENT_LIB})
