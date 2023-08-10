@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
   service_com_conf_t conf = {
     .speed = 460800,
   };
-  com->open(hcom, (service_com_device_t)port, conf);
+  com->open(hcom, (service_com_device_t)port, &conf);
 
   // send some server requests
   for(uint8_t i = 0; i < 10; i++) {

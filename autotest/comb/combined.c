@@ -50,13 +50,13 @@ void thread_server(void* arg) {
   service_com_conf_t conf = { .speed = 0 };
 
   // open a file for logging
-  fs->init();
+  fs->init(NULL);
   service_fs_file_handle_t hfile = fs->file_handle_malloc();
   fs->open(hfile, "autotest/logs/logfile_server.txt", fs->mode.WRONLY | fs->mode.CREAT | fs->mode.APPEND);
 
   service_com_handle_t hcom = com->com_handle_malloc();
   int port = COM_PORT_SERVER;
-  com->open(hcom, (service_com_device_t)&port, conf);
+  com->open(hcom, (service_com_device_t)&port, &conf);
 
   // buffer for incoming commands
   uint8_t buff[64] = { 0 };
@@ -149,7 +149,7 @@ test_client_setup(const MunitParameter params[], void* user_data) {
   service_com_conf_t conf = { .speed = 0 };
   service_com_handle_t hcom = com->com_handle_malloc();
   int port = COM_PORT_CLIENT;
-  com->open(hcom, (service_com_device_t)&port, conf);
+  com->open(hcom, (service_com_device_t)&port, &conf);
 
   // wait until the server is ready
   while(!server_ready) {

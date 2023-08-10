@@ -34,7 +34,7 @@ void log_to_file(service_fs_file_handle_t file, uint8_t* data, size_t len) {
 
 void thread_com(void* arg) {
   // open a file for logging
-  fs->init();
+  fs->init(NULL);
   service_fs_file_handle_t hfile = fs->file_handle_malloc();
   fs->open(hfile, "logfile.txt", fs->mode.WRONLY | fs->mode.CREAT | fs->mode.APPEND);
 
@@ -43,7 +43,7 @@ void thread_com(void* arg) {
   service_com_conf_t conf = {
     .speed = 460800,
   };
-  com->open(hcom, (service_com_device_t)arg, conf);
+  com->open(hcom, (service_com_device_t)arg, &conf);
 
   // buffer for incoming commands
   uint8_t buff[64] = { 0 };
