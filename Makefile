@@ -10,8 +10,8 @@ clean:
 	./scripts/clean.sh
 
 dbg:
-	./scripts/build.sh server Debug
-	./scripts/build.sh client Debug
+	./scripts/build.sh server Linux -DCMAKE_BUILD_TYPE=Debug
+	./scripts/build.sh client Linux -DCMAKE_BUILD_TYPE=Debug
 
 all:
 # build server first, we need the library for the client autotesting
@@ -29,7 +29,7 @@ test:
 
 dbg-test:
 # build server and client, we need the libraries for the autotesting
-	./scripts/build.sh server Debug
-	./scripts/build.sh client Debug
-	./scripts/build.sh combined Debug
-	gdb --args ./build/combined-Debug/driver-templ-combined-bin --no-fork
+	./scripts/build.sh server Linux -DCMAKE_BUILD_TYPE=Debug
+	./scripts/build.sh client Linux -DCMAKE_BUILD_TYPE=Debug
+	./scripts/build.sh combined Linux -DCMAKE_BUILD_TYPE=Debug
+	gdb --args ./build/combined-Linux/driver-templ-combined-bin --no-fork
