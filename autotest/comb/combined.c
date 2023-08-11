@@ -30,6 +30,9 @@ service_com_t* com = &backend_memcom;
 // flag to signal server startup is finished
 volatile bool server_ready = false;
 
+// mutex to protect the flag
+service_os_mutex_handle_t mux = NULL;
+
 // which COM ports to use for server and client
 // memcom addresses ports as integers, ports N and N-1 are connected together
 #define COM_PORT_CLIENT         (0)
@@ -61,7 +64,9 @@ void thread_server(void* arg) {
   // buffer for incoming commands
   uint8_t buff[64] = { 0 };
 
+  os->mutex_lock(&mux, 0);
   server_ready = true;
+  os->mutex_unlock(&mux);
 
   // process commands
   bool keep_running = true;
@@ -152,8 +157,18 @@ test_client_setup(const MunitParameter params[], void* user_data) {
   com->open(hcom, (service_com_device_t)&port, &conf);
 
   // wait until the server is ready
-  while(!server_ready) {
-    os->thread_delay(100);
+  bool wait = true;
+  while(wait) {
+    if(os->mutex_lock(&mux, 10) != SERVICE_OS_PASS) {
+      continue;
+    }
+
+    if(server_ready) {
+      wait = false;
+    }
+
+    os->mutex_unlock(&mux);
+
   }
 
   // return the COM handle, this will be provided to test
@@ -192,6 +207,9 @@ static const MunitSuite test_suite = {
 int main(int argc, char *argv[MUNIT_ARRAY_PARAM(argc + 1)]) {
   // set backends for client and server
   server_set_backends(fs, os, com);
+
+  // create the mutex
+  mux = os->mutex_create();
 
   // set up server thread to handle communicaton coming from the client
   service_os_thread_handle_t th_server;
