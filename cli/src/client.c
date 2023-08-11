@@ -18,10 +18,47 @@ static service_fs_t* client_fs = NULL;
 static service_os_t* client_os = NULL;
 static service_com_t* client_com = NULL;
 
-void client_set_backends(service_fs_t* fs, service_os_t* os, service_com_t* com) {
-  client_fs = fs;
-  client_os = os;
-  client_com = com;
+int16_t client_ping(service_com_handle_t hcom, char* rpl) {
+  // send a ping
+  uint8_t ping_buff[16] = { 0 };
+  client_cmd_send(hcom, DRIVER_TEMPLATE_CMD_PING, NULL, 0);
+
+  // get the reply
+  size_t ret = client_rpl_get(hcom, rpl, strlen(DRIVER_TEMPLATE_CMD_PING_RPL));
+  if(ret != strlen(DRIVER_TEMPLATE_CMD_PING_RPL)) {
+    return(-1);
+  }
+
+  ping_buff[ret] = '\0';
+  return(0);
+}
+
+int16_t client_echo(service_com_handle_t hcom, char* out, char* in) {
+  // send the echo request
+  size_t echo_len = strlen(out);
+  client_cmd_send(hcom, DRIVER_TEMPLATE_CMD_ECHO, (uint8_t*)out, echo_len);
+
+  // get the reply
+  size_t ret = client_rpl_get(hcom, (uint8_t*)in, echo_len);
+  if(ret != echo_len) {
+    return(-1);
+  }
+
+  in[ret] = '\0';
+  return(0);
+}
+
+int16_t client_kill_server(service_com_handle_t hcom) {
+  // send the kill request
+  client_cmd_send(hcom, DRIVER_TEMPLATE_CMD_KILL, NULL, 0);
+  size_t ret = client_rpl_get(hcom, NULL, 0);
+
+  // there should be no reply to this
+  if(ret != 0) {
+    return(-1);
+  }
+
+  return(0);
 }
 
 // the following command/reply functions are for illustration only!
@@ -48,4 +85,10 @@ size_t client_rpl_get(service_com_handle_t hcom, uint8_t* buff, size_t target_le
     }
   }
   return(len);
+}
+
+void client_set_backends(service_fs_t* fs, service_os_t* os, service_com_t* com) {
+  client_fs = fs;
+  client_os = os;
+  client_com = com;
 }

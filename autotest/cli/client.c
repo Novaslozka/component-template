@@ -36,29 +36,23 @@ int main(int argc, char *argv[]) {
   // send some server requests
   for(uint8_t i = 0; i < 10; i++) {
     // send a ping
-    client_cmd_send(hcom, DRIVER_TEMPLATE_CMD_PING, NULL, 0);
-
-    // try to get a reply
     uint8_t ping_buff[16];
-    if(client_rpl_get(hcom, ping_buff, strlen(DRIVER_TEMPLATE_CMD_PING_RPL)) > 0) {
+    if(client_ping(hcom, ping_buff) == 0) {
       printf("Ping #%d got reply: %s\n", i, ping_buff);
     }
     os->thread_delay(10);
   }
 
   // send an echo
-  const char* msg = "This is an echo message";
-  client_cmd_send(hcom, DRIVER_TEMPLATE_CMD_ECHO, (uint8_t*)msg, strlen(msg));
-
-  // try to get a reply
-  uint8_t echo_buff[32] = { 0 };
-  if(client_rpl_get(hcom, echo_buff, strlen(msg) + strlen(DRIVER_TEMPLATE_CMD_LINE_END)) > 0) {
-    printf("Echo got reply: %s\n", echo_buff);
+  char echo_out_buff[] = "Echo this!";
+  char echo_in_buff[32] = { 0 };
+  if(client_echo(hcom, echo_out_buff, echo_in_buff) == 0) {
+    printf("Echo got reply: %s\n", echo_in_buff);
   }
   os->thread_delay(10);
 
-  // un-alive the server
-  client_cmd_send(hcom, DRIVER_TEMPLATE_CMD_KILL, NULL, 0);
+  // send a command to un-alive the server
+  client_kill_server(hcom);
 
   // and now yourself
   com->close(hcom);
