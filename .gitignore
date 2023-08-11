@@ -9,3 +9,6 @@ dev/
 
 # logging output
 logs/
+
+# generated doxygen docs
+docs/

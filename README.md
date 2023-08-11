@@ -20,7 +20,7 @@ Rationale is to create a unified driver structure that enables various levels of
 
 The overall structure is also summarized in the diagram below.
 
-![driver structure](doc/template-structure.png "Driver structure")
+![driver structure](./template-structure.png "Driver structure")
 
 ## Driver client
 This software interfaces with the target device to be controlled. The target device can be one of the following:
@@ -60,3 +60,9 @@ To use this template:
 4. Make sure that everything which is common to both client and the server is kept in `common`. Tyically, this includes lpldgen definitions and generated files, communication interface definitions, device-specific checksum calculations etc.
 5. Write tests - at least the combined unit test for each client-side command that is implemented.
 6. Add the driver as a submodule to the relevant projects - typically this will be at least VCOM and the on-board software. From this higher-level project's CMake, configure all the options and then use the client/server libraries in its code, either by using the client C-API/commands, or by creating the service by using SALLY.
+
+## Generating documentation
+This template also comes with doxyfile
+
+To automatically generate documentation for the repo, run `doxygen` in your commandline
+This documentation should serve as a template for your for of the driver template.
