@@ -64,3 +64,9 @@ To use this template:
 4. Make sure that everything which is common to both client and the server is kept in `common`. Tyically, this includes lpldgen definitions and generated files, communication interface definitions, device-specific checksum calculations etc.
 5. Write tests - at least the combined unit test for each client-side command that is implemented.
 6. Add the driver as a submodule to the relevant projects - typically this will be at least VCOM and the on-board software. From this higher-level project's CMake, configure all the options and then use the client/server libraries in its code, either by using the client C-API/commands, or by creating the service by using SALLY.
+
+## Documenting the driver
+This template also comes with a doxyfile
+
+To automatically generate documentation for the repo, run `doxygen` in your commandline
+This documentation should serve as a template for your for of the driver template.
