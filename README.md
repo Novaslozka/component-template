@@ -3,10 +3,11 @@ This repository contains the template project to be used for implementation of d
 
 Rationale is to create a unified driver structure that enables various levels of hardware- and software-in-the-loop testing.
 
+For further details, see [the Doxygen main page](.doc/doxygen_mainpage.md).
+
 ## How to use
 
-This template should be forked, where it should become a driver.
-
+This template should be forked to whichever group it is most applicable.
 After forking, make sure to correct the `.gitmodules` paths, or initialising the submodules will fail.
 
 ## Documentation
