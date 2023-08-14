@@ -3,6 +3,14 @@ This repository contains the template project to be used for implementation of d
 
 Rationale is to create a unified driver structure that enables various levels of hardware- and software-in-the-loop testing.
 
+## How to use
+
+This template should be forked, where it should become a driver.
+
+After forking, make sure to correct the `.gitmodules` paths, or initialising the submodules will fail.
+
 ## Documentation
 
-The documentation for the repository is located in the [doc/generated](./doc/generated/) folder or on the driver [wiki](https://code.vzlu.cz/common/sw/driver-template/-/wikis/home) page
+To generate the documentation for this repository, go to the [doc/generated](.doc/generated) folder and run `doxygen`
+
+The documentation will be accessible through the .html files that were generated.
