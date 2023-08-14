@@ -3,7 +3,7 @@ This repository contains the template project to be used for implementation of d
 
 Rationale is to create a unified driver structure that enables various levels of hardware- and software-in-the-loop testing.
 
-For further details, see [the Doxygen main page](.doc/doxygen_mainpage.md).
+For further details, see [the Doxygen main page](doc/doxygen_mainpage.md).
 
 ## How to use
 
@@ -12,6 +12,6 @@ After forking, make sure to correct the `.gitmodules` paths, or initialising the
 
 ## Documentation
 
-To generate the documentation for this repository, go to the [doc/generated](.doc/generated) folder and run `doxygen`
+To generate the documentation for this repository, go to the [doc/generated](doc/generated) folder and run `doxygen`
 
 The documentation will be accessible through the .html files that were generated.
