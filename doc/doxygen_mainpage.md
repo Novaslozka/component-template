@@ -54,7 +54,7 @@ When building client with commandline control, `BUILD_CMDLINE` must be enabled i
 ## Abstraction layers
 The driver client and software may run on various platforms - at least the developer PC, CI dockers and target flight platforms are foreseen. Therefore, it is necessary to use abstraction layers to decouple the implementations from specific hardware or OS.
 
-To abstract filesystem, OS operations and COM ports, the [SALLY abstraction](https://code.vzlusat.cz/common/mcu/service-abstraction) layer may be used. Currently implemented backends may be found in [this repository](https://code.vzlusat.cz/common/mcu/sally-backends).
+To abstract filesystem, OS operations and COM ports, the [SALLY abstraction](https://gitlab.com/vzlu/sw/sally) layer may be used. Currently implemented backends may be found in [this repository](https://gitlab.com/vzlu/sw/sally-backends).
 
 ## Using this template
 To use this template:
