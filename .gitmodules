@@ -1,6 +1,6 @@
 [submodule "lib/service-abstraction"]
 	path = lib/service-abstraction
-	url = ../../mcu/service-abstraction.git
+	url = git@gitlab.com:vzlu/sw/sally.git
 [submodule "lib/sally-backends"]
 	path = lib/sally-backends
-	url = ../../mcu/sally-backends.git
+	url = git@gitlab.com:vzlu/sw/sally-backends.git
