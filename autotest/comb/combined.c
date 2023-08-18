@@ -207,7 +207,7 @@ int main(int argc, char *argv[MUNIT_ARRAY_PARAM(argc + 1)]) {
   mux = os->mutex_create();
 
   // set up server thread to handle communicaton coming from the client
-  service_os_thread_handle_t th_server;
+  service_os_thread_handle_t th_server = NULL;
   os->thread_create(&th_server, NULL, thread_server, NULL);
 
   // run the tests

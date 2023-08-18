@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
   server_set_backends(fs, os, com);
 
   // set up a thread to handle incoming communicaton
-  service_os_thread_handle_t thread;
+  service_os_thread_handle_t thread = NULL;
   os->thread_create(&thread, NULL, thread_com, (void*)port);
 
   // wait for exit
