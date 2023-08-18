@@ -8,5 +8,5 @@ build/
 dev/
 
 # logging output
-logs/
+autotest/logs/*
 
