@@ -95,6 +95,9 @@ void thread_server(void* arg) {
   com->com_handle_free(hcom);
   fs->close(hfile);
   fs->file_handle_free(hfile);
+
+  // kill own thread
+  os->thread_delete(NULL);
 }
 
 static MunitResult
