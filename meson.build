@@ -62,15 +62,22 @@ endif
 inc_dirs = ['common/include']
 lib_src = backend_src
 bin_src = backend_src
+lib_name = project_name
 if class == 'client'
   inc_dirs += 'cli/include'
   lib_src += client_lib_src
-  bin_src += client_bin_src
+  lib_name += '-cli'
+  if get_option('build_autotest')
+    bin_src += client_bin_src
+  endif
 
 elif class == 'server'
   inc_dirs += 'srv/include'
   lib_src += server_lib_src
-  bin_src += server_bin_src
+  lib_name += '-srv'
+  if get_option('build_autotest')
+    bin_src += server_bin_src
+  endif
 
 elif class == 'combined'
   inc_dirs += 'cli/include'
@@ -92,7 +99,7 @@ endif
 if class == 'client' or class == 'server'
   # non-combined build, prepare the library
   lib = static_library(
-          project_name,
+          lib_name,
           lib_src, 
           dependencies: component_deps,
           include_directories: inc_dirs,
@@ -103,7 +110,7 @@ if class == 'client' or class == 'server'
   if get_option('build_autotest')
     inc_dirs += 'autotest/munit'
     bin_src += files('autotest/munit/munit.c')
-    exe = executable(autotest_exe, bin_src,
+    exe = executable(lib_name + '-bin', bin_src,
             dependencies: component_deps,
             include_directories : inc_dirs,
             c_args: backend_defs,
