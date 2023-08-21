@@ -64,9 +64,9 @@ void thread_server(void* arg) {
   // buffer for incoming commands
   uint8_t buff[64] = { 0 };
 
-  os->mutex_lock(&mux, 0);
+  os->mutex_lock(mux, 0);
   server_ready = true;
-  os->mutex_unlock(&mux);
+  os->mutex_unlock(mux);
 
   // process commands
   bool keep_running = true;
@@ -157,7 +157,7 @@ test_client_setup(const MunitParameter params[], void* user_data) {
   // wait until the server is ready
   bool wait = true;
   while(wait) {
-    if(os->mutex_lock(&mux, 10) != SERVICE_OS_PASS) {
+    if(os->mutex_lock(mux, 10) != SERVICE_OS_PASS) {
       continue;
     }
 
@@ -165,7 +165,7 @@ test_client_setup(const MunitParameter params[], void* user_data) {
       wait = false;
     }
 
-    os->mutex_unlock(&mux);
+    os->mutex_unlock(mux);
 
   }
 
