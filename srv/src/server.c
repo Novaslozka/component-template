@@ -34,7 +34,7 @@ int server_process_cmd(service_com_handle_t hcom, uint8_t* buff, size_t len) {
 
     case DRIVER_TEMPLATE_CMD_ECHO: {
       // on echo, sned everything backeexcept the command byte
-      uint8_t* pos = strstr(buff, DRIVER_TEMPLATE_CMD_LINE_END);
+      uint8_t* pos = (uint8_t*)strstr((char*)buff, DRIVER_TEMPLATE_CMD_LINE_END);
       if(pos != NULL) {
         size_t echo_len = pos-buff-1;
         server_com->write(hcom, (void*)&buff[1], echo_len);

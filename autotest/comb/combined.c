@@ -105,7 +105,7 @@ test_ping(const MunitParameter params[], void* fixture) {
   service_com_handle_t hcom = (service_com_handle_t)fixture;
 
   // send a ping and get the reply
-  uint8_t ping_buff[16] = { 0 };
+  char ping_buff[16] = { 0 };
   int16_t ret = client_ping(hcom, ping_buff);
 
   // check we have the data and that it matches the expected "Hello World!" reply

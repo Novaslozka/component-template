@@ -20,16 +20,14 @@ static service_com_t* client_com = NULL;
 
 int16_t client_ping(service_com_handle_t hcom, char* rpl) {
   // send a ping
-  uint8_t ping_buff[16] = { 0 };
   client_cmd_send(hcom, DRIVER_TEMPLATE_CMD_PING, NULL, 0);
 
   // get the reply
-  size_t ret = client_rpl_get(hcom, rpl, strlen(DRIVER_TEMPLATE_CMD_PING_RPL));
+  size_t ret = client_rpl_get(hcom, (uint8_t*)rpl, strlen(DRIVER_TEMPLATE_CMD_PING_RPL));
   if(ret != strlen(DRIVER_TEMPLATE_CMD_PING_RPL)) {
     return(-1);
   }
 
-  ping_buff[ret] = '\0';
   return(0);
 }
 
