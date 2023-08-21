@@ -7,8 +7,19 @@ For further details, see [the Doxygen main page](doc/doxygen_mainpage.md).
 
 ## How to use
 
-This template should be forked to whichever group it is most applicable.
-After forking, make sure to correct the `.gitmodules` paths, or initialising the submodules will fail.
+Usually, the easiest/fastest option is to fork this repository. When the target repository is to be hosted somewhere other than GitLab.com, then the workflow is as follows:
+
+```
+$ git clone git@gitlab.com:vzlu/sw/component-template.git <your-component-name>
+$ git remote rename origin template
+$ git remote add origin <path-to-your-origin>
+$ git push -u origin --all
+$ git push -u origin --tags
+```
+
+## Build
+
+There are two options how to build the template and its tests: Meson build (preferred) and CMake (legacy). Building by Meson is done by executing the build script `./scripts/mbuild.sh`. Building by CMake can be done by targets in the provided Makefile (e.g., `make test`), but it should be noted CMake support is for legacy projects only and its use is strongly discouraged for new development.
 
 ## Documentation
 

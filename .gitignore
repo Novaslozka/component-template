@@ -10,3 +10,6 @@ dev/
 # logging output
 autotest/logs/*
 
+# Meson subproject folders (skips .wrap files)
+subprojects/*/
+
