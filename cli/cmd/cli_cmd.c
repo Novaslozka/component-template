@@ -33,6 +33,11 @@ void register_cli_cmds(void) {
 
 static int cli_ping(console_ctx_t *ctx, cmd_signature_t *reg) {
   EMPTY_CMD_SETUP("Ping the server")
+
+  if(!hcom) {
+    console_printf("No port set!\n");
+    return CONSOLE_ERR_NOT_POSSIBLE;
+  }
   
   uint8_t ping_buff[16] = { 0 };
   int16_t ret = client_ping(hcom, ping_buff);
@@ -59,6 +64,11 @@ static int cli_echo(console_ctx_t *ctx, cmd_signature_t *reg) {
     reg->help = EXPENDABLE_STRING("Echo a message");
     return 0;
   }
+
+  if(!hcom) {
+    console_printf("No port set!\n");
+    return CONSOLE_ERR_NOT_POSSIBLE;
+  }
   
   char echo_in_buff[16] = { 0 };
   int16_t ret = client_echo(hcom, echo_in_buff, args.msg->sval[0]);
@@ -73,6 +83,11 @@ static int cli_echo(console_ctx_t *ctx, cmd_signature_t *reg) {
 
 static int cli_kill(console_ctx_t *ctx, cmd_signature_t *reg) {
   EMPTY_CMD_SETUP("Kill the server")
+
+  if(!hcom) {
+    console_printf("No port set!\n");
+    return CONSOLE_ERR_NOT_POSSIBLE;
+  }
   
   int16_t ret = client_kill_server(hcom);
   if(ret != 0) {
@@ -102,6 +117,8 @@ static int cli_port(console_ctx_t *ctx, cmd_signature_t *reg) {
   if(!hcom) {
     hcom = com->com_handle_malloc();
   }
+
+  client_set_backends(NULL, NULL, com);
 
   service_com_conf_t conf = { .speed = 0 };
   com->open(hcom, (service_com_device_t)args.port->sval[0], &conf);
