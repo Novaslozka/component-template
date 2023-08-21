@@ -36,7 +36,7 @@ void thread_com(void* arg) {
   // open a file for logging
   fs->init(NULL);
   service_fs_file_handle_t hfile = fs->file_handle_malloc();
-  fs->open(hfile, "logfile.txt", fs->mode.WRONLY | fs->mode.CREAT | fs->mode.APPEND);
+  fs->open(hfile, "autotest/logs/logfile.txt", fs->mode.WRONLY | fs->mode.CREAT | fs->mode.APPEND);
 
   // open a COM port
   service_com_handle_t hcom = com->com_handle_malloc();
