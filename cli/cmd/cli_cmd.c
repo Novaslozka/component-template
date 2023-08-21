@@ -39,7 +39,7 @@ static int cli_ping(console_ctx_t *ctx, cmd_signature_t *reg) {
     return CONSOLE_ERR_NOT_POSSIBLE;
   }
   
-  uint8_t ping_buff[16] = { 0 };
+  char ping_buff[16] = { 0 };
   int16_t ret = client_ping(hcom, ping_buff);
   if(ret != 0) {
     console_printf("Failed, code %d\n", ret);
@@ -71,7 +71,7 @@ static int cli_echo(console_ctx_t *ctx, cmd_signature_t *reg) {
   }
   
   char echo_in_buff[16] = { 0 };
-  int16_t ret = client_echo(hcom, echo_in_buff, args.msg->sval[0]);
+  int16_t ret = client_echo(hcom, echo_in_buff, (char*)args.msg->sval[0]);
   if(ret != 0) {
     console_printf("Failed, code %d\n", ret);
     return CONSOLE_ERR_IO;
@@ -91,7 +91,7 @@ static int cli_kill(console_ctx_t *ctx, cmd_signature_t *reg) {
   
   int16_t ret = client_kill_server(hcom);
   if(ret != 0) {
-    console_printf("Failed, code %d\n");
+    console_printf("Failed, code %d\n", ret);
     return CONSOLE_ERR_IO;
   }
 
