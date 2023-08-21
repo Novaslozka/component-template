@@ -1,5 +1,5 @@
 # (0) choose an appropriate name for the component
-project('comp-templ', 'c', version : '0.1')
+project('comp-templ', 'c', version : '0.1', default_options : 'default_library=shared')
 project_name = 'comp-templ'
 
 # (1) enable SALLY CSP support, if needed
@@ -43,9 +43,10 @@ endif
 client_lib_src = files('cli/src/client.c')
 server_lib_src = files('srv/src/server.c')
 
-# (3.1) if client commands are to be built, specify the sources
+# (3.1) if client commands are to be built, specify the sources and add console dep
 if get_option('build_cmdline')
   client_cmd_src = files('cli/cmd/cli_cmd.c')
+  component_deps += dependency('console')
 endif
 
 # (3.2) if some autotests are to be built, specify the sources
@@ -54,6 +55,9 @@ if get_option('build_autotest')
   server_bin_src = files('autotest/srv/server.c')
   combined_bin_src = files('autotest/comb/combined.c')
 endif
+
+# SALLY is always needed
+component_deps += dependency('srv-abs')
 
 # TODO check build class
 
@@ -66,6 +70,10 @@ lib_name = project_name
 if class == 'client'
   inc_dirs += 'cli/include'
   lib_src += client_lib_src
+  if get_option('build_cmdline')
+    lib_src += client_cmd_src
+  endif
+
   lib_name += '-cli'
   if get_option('build_autotest')
     bin_src += client_bin_src
@@ -86,19 +94,34 @@ elif class == 'combined'
 
 endif
 
+# configure lpldgen if it is used
+if get_option('enable_lpldgen')
+  pld = dependency('pld')
+  component_deps += pld
+
+  lpldgen = find_program(pld.get_variable('lpldgen'), native : true)
+  pld_src = custom_target(
+    'pld_' + project_name,
+    input : 'common/lpldgen/config.json',
+    output : ['pld_' + project_name + '.h', 'pld_' + project_name + '.c'],
+    depend_files : ['common/lpldgen/module.json', 'common/lpldgen/cmds.txt'],
+    command : [lpldgen, '--config', '@INPUT@', '--output-inc', '@OUTPUT0@', '--output-src', '@OUTPUT1@'],
+  )
+
+  lib_src += pld_src
+  bin_src += pld_src
+  inc_dirs += 'common/lpldgen/include'
+endif
+
 # set name for the static library and autotest executable
 if get_option('build_autotest')
-  # SALLY should be provided by the higher-level user (e.g. VCOM or OBSW),
-  # unless this is autotest, where there is no higher-level user
-  component_deps += dependency('srv-abs')
   autotest_exe = project_name + '-bin'
 endif
 
-# add both targets./cl  
-
+# add both targets
 if class == 'client' or class == 'server'
   # non-combined build, prepare the library
-  lib = static_library(
+  lib = library(
           lib_name,
           lib_src, 
           dependencies: component_deps,
@@ -119,7 +142,7 @@ if class == 'client' or class == 'server'
 
 else
   # for combined build, we need server and client libs and combined executable
-  lib_cli = static_library(
+  lib_cli = library(
               project_name + '-cli',
               backend_src + client_lib_src, 
               dependencies: component_deps,
@@ -127,7 +150,7 @@ else
               c_args: backend_defs
             )
   
-  lib_srv = static_library(
+  lib_srv = library(
               project_name + '-srv',
               backend_src + server_lib_src, 
               dependencies: component_deps,
