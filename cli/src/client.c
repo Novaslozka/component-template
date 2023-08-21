@@ -33,16 +33,16 @@ int16_t client_ping(service_com_handle_t hcom, char* rpl) {
 
 int16_t client_echo(service_com_handle_t hcom, char* out, char* in) {
   // send the echo request
-  size_t echo_len = strlen(out);
-  client_cmd_send(hcom, DRIVER_TEMPLATE_CMD_ECHO, (uint8_t*)out, echo_len);
+  size_t echo_len = strlen(in);
+  client_cmd_send(hcom, DRIVER_TEMPLATE_CMD_ECHO, (uint8_t*)in, echo_len);
 
   // get the reply
-  size_t ret = client_rpl_get(hcom, (uint8_t*)in, echo_len);
+  size_t ret = client_rpl_get(hcom, (uint8_t*)out, echo_len);
   if(ret != echo_len) {
     return(-1);
   }
 
-  in[ret] = '\0';
+  out[ret] = '\0';
   return(0);
 }
 
