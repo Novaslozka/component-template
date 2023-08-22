@@ -32,6 +32,13 @@ if(CMAKE_BUILD_PLATFORM STREQUAL "Linux")
 
   # (2.5) disable building commandline commands for this platform
   set(BUILD_CMDLINE OFF)
+
+  # (2.6) optionally set lpldgen options on this platform
+  if(${ENABLE_LPLDGEN})
+    set(PLD_BUILD_FUNCS_CHECK_ID 0)
+    set(PLD_HAVE_ALLOC ON)
+    set(PLD_HAVE_EXPORT ON)
+  endif()
 else()
   message(FATAL_ERROR "${CMAKE_BUILD_PLATFORM} is not a known build type")
 endif()
