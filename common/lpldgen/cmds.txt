@@ -1,0 +1,17 @@
+// this is an example of packets defined by lpldgen:
+// https://gitlab.com/vzlu/sw/lpldgen
+// typically, these are used for defining CSP packets
+// however, lpldgen can also be used for other binary data
+
+/// Example request to CSP node 1, port 2
++to 1:2
+struct Request {
+  u8 byte_field
+  float float_field
+}
+
+/// Example reply to Request
++from 1:2
+struct Reply {
+  i32 int_field
+}

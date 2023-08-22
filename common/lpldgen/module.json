@@ -1,6 +1,6 @@
 {
   "name": "Name",
-  "id_range": [ 0, 1 ],
+  "id_range": [ 1, 10 ],
   "specs": [ "cmds.txt" ],
   "variables": { }
 }
