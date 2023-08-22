@@ -81,6 +81,12 @@ if(${BUILD_CMDLINE})
   list(APPEND LIB_SOURCES ${CMD_SOURCES})
 endif()
 
+# add lpldgen if needed
+if(${ENABLE_LPLDGEN})
+  file(GLOB_RECURSE LPLDGEN_SOURCES "common/lpldgen/src/*.c")
+  list(APPEND LIB_SOURCES ${LPLDGEN_SOURCES})
+endif()
+
 # add both targets
 add_library(${STATIC_LIB} STATIC ${LIB_SOURCES})
 if(${BUILD_AUTOTEST})
@@ -115,6 +121,18 @@ set(INCLUDE_DIRS
   PRIVATE "${CMAKE_BUILD_CLASS_PATH}/include"
   PRIVATE "common/include"
 )
+
+# add lpldgen if needed
+if(${ENABLE_LPLDGEN})
+  configure_file(
+    "common/lpldgen/include/conf_payloads.h.in"
+    "common/include/conf_payloads.h"
+  )
+  list(APPEND INCLUDE_DIRS
+    PRIVATE "common/lpldgen/include"
+    PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/common/include"
+  )
+endif()
 
 # link the common libs to the static lib
 target_include_directories(${STATIC_LIB} ${INCLUDE_DIRS})
