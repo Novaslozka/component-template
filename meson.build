@@ -99,6 +99,10 @@ if get_option('enable_lpldgen')
   pld = dependency('pld')
   component_deps += pld
 
+  if get_option('build_cmdline')
+    component_deps += dependency('commands')
+  endif
+
   lpldgen = find_program(pld.get_variable('lpldgen'), native : true)
   pld_src = custom_target(
     'pld_' + project_name,
