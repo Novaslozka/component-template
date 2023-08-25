@@ -17,9 +17,27 @@ $ git push -u origin --all
 $ git push -u origin --tags
 ```
 
+After this, you can use this template for your SW driver implementation. Usually this will involve:
+
+1. Updating the configuration file (meson.build or CMakeLists.txt) to fit your target platform, backends and source files. The numbered steps in the file will help you get started, however, knowledge of the build system is assumed.
+2. Adding source files for client, server, autotests, commands etc.
+3. Building and testing your client/server or deploying command plugins.
+
 ## Build
 
-There are two options how to build the template and its tests: Meson build (preferred) and CMake (legacy). Building by Meson is done by executing the build script `./scripts/mbuild.sh`. When building with Meson, lpldgen must be installed as a system-wide shared library following the steps in [lpldgen readme](https://gitlab.com/vzlu/sw/lpldgen/-/blob/master/README.md#using-as-shared-library).
+There are two options how to build the template and its tests: Meson build (preferred) and CMake (legacy). Building by Meson is done by executing the build script `./scripts/mbuild.sh`. When building with Meson, the following dependencies must be available as shared library:
+
+* lpldgen: https://gitlab.com/vzlu/sw/lpldgen
+* libcommands: https://gitlab.com/vzlu/sw/libcommands
+* libcsp (VZLU fork): https://gitlab.com/vzlu/sw/libcsp
+* libconsole: https://gitlab.com/vzlu/sw/lib-console
+
+To install them as shared library into the default location (e.g., `/usr/local/lib/x86_64-linux-gnu/` on Debian-based Linux), clone the repository and then run the following:
+
+```
+meson build
+cd build && ninja install
+```
 
 Building by CMake can be done by targets in the provided Makefile (e.g., `make test`), but it should be noted CMake support is for legacy projects only and its use is strongly discouraged for new development.
 
