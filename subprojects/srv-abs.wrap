@@ -1,4 +1,4 @@
 [wrap-git]
-url = git@gitlab.com:vzlu/sw/sally.git
+url = https://gitlab.com/vzlu/sw/sally.git
 revision = main
 depth = 1
