@@ -43,18 +43,24 @@ endif
 client_lib_src = files('cli/src/client.c')
 server_lib_src = files('srv/src/server.c')
 
-# (3.1) if client commands are to be built, specify the sources and add console dep
+# (3.1) add sources common to both client and server
+# NOTE: if lpldgen is used, do not add it here, as it is handled automatically!
+common_src = files('common/src/common.c')
+
+# (3.2) if client commands are to be built, specify the sources and add console dep
 if get_option('build_cmdline')
   client_cmd_src = files('cli/cmd/cli_cmd.c')
   component_deps += dependency('console')
 endif
 
-# (3.2) if some autotests are to be built, specify the sources
+# (3.3) if some autotests are to be built, specify the sources
 if get_option('build_autotest')
   client_bin_src = files('autotest/cli/client.c')
   server_bin_src = files('autotest/srv/server.c')
   combined_bin_src = files('autotest/comb/combined.c')
 endif
+
+# (4) end of user configuration
 
 # SALLY is always needed
 component_deps += dependency('srv-abs')
@@ -62,10 +68,17 @@ component_deps += dependency('srv-abs')
 # TODO check build class
 
 # set paths to the different build classes
-# the path is different from class on purpose to avoid confusion
+# since meson doesn't allow globbing, there are several variables to keep track of source files:
+# - client_lib_src: sources for the client library
+# - client_bin_src: sources for the client autotest binary
+# - server_lib_src: sources for the server library
+# - server_bin_src: sources for the server autotest binary
+# - client_cmd_src: sources for the client commands
+# - combined_bin_src: sources for the combined autotest binary
+
 inc_dirs = ['common/include']
-lib_src = backend_src
-bin_src = backend_src
+lib_src = backend_src + common_src
+bin_src = backend_src + common_src
 lib_name = project_name
 if class == 'client'
   inc_dirs += 'cli/include'
@@ -114,6 +127,7 @@ if get_option('enable_lpldgen')
 
   lib_src += pld_src
   bin_src += pld_src
+  common_src += pld_src
   inc_dirs += 'common/lpldgen/include'
 endif
 
@@ -148,7 +162,7 @@ else
   # for combined build, we need server and client libs and combined executable
   lib_cli = library(
               project_name + '-cli',
-              backend_src + client_lib_src, 
+              client_lib_src + common_src, 
               dependencies: component_deps,
               include_directories: inc_dirs,
               c_args: backend_defs
@@ -156,7 +170,7 @@ else
   
   lib_srv = library(
               project_name + '-srv',
-              backend_src + server_lib_src, 
+              server_lib_src + common_src, 
               dependencies: component_deps,
               include_directories: inc_dirs,
               c_args: backend_defs
