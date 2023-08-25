@@ -19,7 +19,9 @@ $ git push -u origin --tags
 
 ## Build
 
-There are two options how to build the template and its tests: Meson build (preferred) and CMake (legacy). Building by Meson is done by executing the build script `./scripts/mbuild.sh`. Building by CMake can be done by targets in the provided Makefile (e.g., `make test`), but it should be noted CMake support is for legacy projects only and its use is strongly discouraged for new development.
+There are two options how to build the template and its tests: Meson build (preferred) and CMake (legacy). Building by Meson is done by executing the build script `./scripts/mbuild.sh`. When building with Meson, lpldgen must be installed as a system-wide shared library following the steps in [lpldgen readme](https://gitlab.com/vzlu/sw/lpldgen/-/blob/master/README.md#using-as-shared-library).
+
+Building by CMake can be done by targets in the provided Makefile (e.g., `make test`), but it should be noted CMake support is for legacy projects only and its use is strongly discouraged for new development.
 
 ## Documentation
 
