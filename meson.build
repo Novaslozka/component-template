@@ -158,6 +158,19 @@ if class == 'client' or class == 'server'
             link_with: lib)
   endif
 
+  # if the component is being built as statically linked library,
+  # it needs to be declared as a dependency
+  if get_option('default_library') == 'static'
+    lib_dep = declare_dependency(
+      include_directories : inc_dirs,
+      link_with : lib
+    )
+    meson.override_dependency(lib_name, lib_dep)
+
+    pkgconfig = import('pkgconfig')
+    pkgconfig.generate(lib)
+  endif
+
 else
   # for combined build, we need server and client libs and combined executable
   lib_cli = library(
