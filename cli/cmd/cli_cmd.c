@@ -19,8 +19,15 @@ static int cli_echo(console_ctx_t *ctx, cmd_signature_t *reg);
 static int cli_kill(console_ctx_t *ctx, cmd_signature_t *reg);
 static int cli_port(console_ctx_t *ctx, cmd_signature_t *reg);
 
-// the registration function
+// the registration function for shared libraries
+#if !defined(STATIC_BUILD)
 void register_cli_cmds(void) {
+  register_cli_example_cmds();
+}
+#endif
+
+// the registration function
+void register_cli_example_cmds(void) {
   console_group_add("cli", "Client example");
 
   console_cmd_register(cli_ping, "cli ping");
