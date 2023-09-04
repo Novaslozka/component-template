@@ -60,7 +60,17 @@ if get_option('build_autotest')
   combined_bin_src = files('autotest/comb/combined.c')
 endif
 
-# (4) end of user configuration
+# (4) set the project-specific configuration
+#     this takes options from meson_options.txt (or provided from commandline)
+#     and builds the configuration file based on the .in template
+common_config_path = 'common/include/templ'
+common_config = configuration_data()
+common_config.set('TEMPLATE_OPTION', get_option('template_option'))
+
+# (5) any miscellanous user configuration should go here
+#     e.g., additional depenednecies based on user options
+
+# (6) end of user configuration
 
 # SALLY is always needed
 component_deps += dependency('srv-abs')
