@@ -1,5 +1,5 @@
 # (0) choose an appropriate name for the component
-project('comp-templ', 'c', version : '0.1', default_options : 'default_library=shared')
+project('comp-templ', 'c', version : '0.1', default_options : 'default_library=shared', meson_version : '>=0.61.2')
 project_name = 'comp-templ'
 
 # (1) enable SALLY CSP support, if needed
