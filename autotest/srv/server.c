@@ -1,5 +1,5 @@
 // static library headers
-#include <srv/server.h>
+#include <template/server.h>
 
 // standard libraries
 #include <string.h>

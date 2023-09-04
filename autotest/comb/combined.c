@@ -1,6 +1,6 @@
 // static library headers
-#include <cli/client.h>
-#include <srv/server.h>
+#include <template/client.h>
+#include <template/server.h>
 
 // standard libraries
 #include <string.h>
