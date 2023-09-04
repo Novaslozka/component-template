@@ -1,5 +1,5 @@
-#include "cli/cmd_cli.h"
-#include "cli/client.h"
+#include "template/cmd_cli.h"
+#include "template/client.h"
 
 #include <stdio.h>
 #include <stdlib.h>

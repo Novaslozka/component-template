@@ -1,5 +1,5 @@
 // app headers
-#include "cli/client.h"
+#include "template/client.h"
 
 // standard libraries
 #include <string.h>
