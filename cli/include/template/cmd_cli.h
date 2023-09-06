@@ -9,6 +9,16 @@
     This signature is mandatory for VCOM plugins!
 */
 void register_cli_cmds(void);
+
+/*!
+    \brief Function to provide caller with version control information about the plugin.
+    This signature is mandatory for VCOM plugins!
+    \param semver Pointer to buffer for storing semantic version string
+    (15 characters at most).
+    \param gitrev Pointer to buffer for storing abbreviated git revision string
+    (13 characters at most when "-dirty").
+*/
+void get_version(char* semver, char* gitrev);
 #endif
 
 /*!

@@ -19,10 +19,21 @@ static int cli_echo(console_ctx_t *ctx, cmd_signature_t *reg);
 static int cli_kill(console_ctx_t *ctx, cmd_signature_t *reg);
 static int cli_port(console_ctx_t *ctx, cmd_signature_t *reg);
 
-// the registration function for shared libraries
+// the interface for shared libraries
 #if !defined(STATIC_BUILD)
 void register_cli_cmds(void) {
   register_cli_example_cmds();
+}
+
+void get_version(char* semver, char* gitrev) {
+  if(semver) {
+    // at most 15 characters and NULL
+    strncpy(semver, VERSION, 16);
+  }
+  if(gitrev) {
+    // at most 13 characters and NULL
+    strncpy(gitrev, GITREV, 14);
+  }
 }
 #endif
 

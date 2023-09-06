@@ -72,6 +72,16 @@ common_config.set('TEMPLATE_OPTION', get_option('template_option'))
 
 # (6) end of user configuration
 
+# get the git revision
+res = run_command(['git', 'describe', '--always', '--dirty'], capture : true, check : true)
+gitrev = res.stdout()
+
+add_project_arguments(
+  '-DVERSION="@0@"'.format(meson.project_version()),
+  '-DGITREV="@0@"'.format(gitrev.strip()),
+  language : 'c',
+)
+
 # SALLY is always needed
 component_deps += dependency('srv-abs')
 
