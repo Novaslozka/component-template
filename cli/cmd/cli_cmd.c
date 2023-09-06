@@ -20,7 +20,7 @@ static int cli_kill(console_ctx_t *ctx, cmd_signature_t *reg);
 static int cli_port(console_ctx_t *ctx, cmd_signature_t *reg);
 
 // the interface for shared libraries
-#if !defined(STATIC_BUILD)
+#if defined(SHARED_BUILD)
 void register_cli_cmds(void) {
   register_cli_example_cmds();
 }

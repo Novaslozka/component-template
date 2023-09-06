@@ -3,7 +3,7 @@
 
 #include <service/service_com.h>
 
-#if !defined(STATIC_BUILD)
+#if defined(SHARED_BUILD)
 /*!
     \brief Register client commands.
     This signature is mandatory for VCOM plugins!

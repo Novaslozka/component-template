@@ -159,8 +159,8 @@ endif
 # add both targets
 if class == 'client' or class == 'server'
   # non-combined build, prepare the library
-  if get_option('default_library') == 'static'
-    backend_defs += '-DSTATIC_BUILD'
+  if get_option('default_library') == 'shared'
+    backend_defs += '-DSHARED_BUILD'
   endif
   lib = library(
           lib_name,
