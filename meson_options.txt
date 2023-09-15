@@ -4,7 +4,7 @@ option('enable_lpldgen', type : 'boolean', value : false, description : 'Enable 
 option('build_platform', type : 'string', value : 'Linux', description : 'Which platform to build for')
 option('build_class', type : 'combo', choices : ['client', 'server', 'combined'], value : 'combined', description : 'Build class')
 option('build_autotest', type : 'boolean', value : true, description : 'Enable building autotest on the selected platform')
-option('build_cmdline', type : 'boolean', value : false, description : 'Enable building commandline commands on the selected platform')
+option('build_cmdline', type : 'combo', choices : ['none', 'static', 'plugin'], value : 'none', description : 'Enable building commandline commands on the selected platform')
 
 # possible additional user options
 option('template_option', type : 'boolean', value : false, description : 'Thsi is an example user option')

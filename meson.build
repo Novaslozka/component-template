@@ -48,7 +48,7 @@ server_lib_src = files('srv/src/server.c')
 common_src = files('common/src/common.c')
 
 # (3.2) if client commands are to be built, specify the sources and add console dep
-if get_option('build_cmdline')
+if get_option('build_cmdline') != 'none'
   client_cmd_src = files('cli/cmd/cli_cmd.c')
   component_deps += dependency('console')
 endif
@@ -103,7 +103,7 @@ lib_name = project_name
 if class == 'client'
   inc_dirs += 'cli/include'
   lib_src += client_lib_src
-  if get_option('build_cmdline')
+  if get_option('build_cmdline') != 'none'
     lib_src += client_cmd_src
   endif
 
@@ -132,7 +132,7 @@ if get_option('enable_lpldgen')
   pld = dependency('pld')
   component_deps += pld
 
-  if get_option('build_cmdline')
+  if get_option('build_cmdline') != 'none'
     component_deps += dependency('commands')
   endif
 
@@ -159,9 +159,21 @@ endif
 # add both targets
 if class == 'client' or class == 'server'
   # non-combined build, prepare the library
-  if get_option('default_library') == 'shared'
+  if get_option('default_library') == 'shared' or get_option('build_cmdline') == 'plugin'
     backend_defs += '-DSHARED_BUILD'
   endif
+
+  if get_option('build_cmdline') == 'plugin'
+    # when building as plugin, we need to enfore shared library
+    # because default_library will be set to static
+    lib = shared_library(
+            lib_name,
+            lib_src, 
+            dependencies: component_deps,
+            include_directories: inc_dirs,
+            c_args: backend_defs
+          )
+  else
   lib = library(
           lib_name,
           lib_src, 
@@ -169,6 +181,7 @@ if class == 'client' or class == 'server'
           include_directories: inc_dirs,
           c_args: backend_defs
         )
+  endif
   
   # if this is an autotest build, create the client/server executable as well
   if get_option('build_autotest')
