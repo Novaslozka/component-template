@@ -68,7 +68,7 @@ common_config = configuration_data()
 common_config.set('TEMPLATE_OPTION', get_option('template_option'))
 
 # (5) any miscellanous user configuration should go here
-#     e.g., additional depenednecies based on user options
+#     e.g., additional dependencies based on user options
 
 # (6) end of user configuration
 
@@ -141,7 +141,7 @@ if get_option('enable_lpldgen')
     'pld_' + project_name,
     input : 'common/lpldgen/config.json',
     output : ['pld_' + project_name + '.h', 'pld_' + project_name + '.c'],
-    depend_files : ['common/lpldgen/module.json', 'common/lpldgen/cmds.txt'],
+    depend_files : ['common/lpldgen/module.json'],
     command : [lpldgen, '--config', '@INPUT@', '--output-inc', '@OUTPUT0@', '--output-src', '@OUTPUT1@'],
   )
 
@@ -155,6 +155,10 @@ endif
 if get_option('build_autotest')
   autotest_exe = project_name + '-bin'
 endif
+
+# install the project-specific configuration
+subdir(common_config_path)
+install_subdir(common_config_path, install_dir : get_option('includedir'), exclude_files : 'meson.build')
 
 # add both targets
 if class == 'client' or class == 'server'
