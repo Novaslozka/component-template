@@ -177,14 +177,22 @@ if class == 'client' or class == 'server'
             include_directories: inc_dirs,
             c_args: backend_defs
           )
+  
   else
-  lib = library(
-          lib_name,
-          lib_src, 
-          dependencies: component_deps,
-          include_directories: inc_dirs,
-          c_args: backend_defs
-        )
+    lib = library(
+            lib_name,
+            lib_src, 
+            dependencies: component_deps,
+            include_directories: inc_dirs,
+            c_args: backend_defs,
+            install : get_option('install_lib')
+          )
+    if get_option('install_lib')
+      foreach dir : inc_dirs
+        install_subdir(dir, install_dir : get_option('includedir'), strip_directory: true, exclude_files : 'meson.build')
+      endforeach
+    endif
+
   endif
   
   # if this is an autotest build, create the client/server executable as well
