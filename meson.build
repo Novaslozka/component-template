@@ -12,11 +12,12 @@ endif
 platform = get_option('build_platform')
 class = get_option('build_class')
 backend_defs = []
+backend_src = files()
 
 # (2) create the platform-specific configuration
 if platform == 'Linux'
   # (2.1) set platform-specific backend sources
-  backend_src = files(
+  backend_src += files(
     'lib/sally-backends/fs/posix_backend.c',
     'lib/sally-backends/os/posix_backend.c',
     'lib/sally-backends/com/posix_tty_backend.c',
