@@ -1,6 +1,6 @@
 # (0) choose an appropriate name for the component
-project('comp-templ', 'c', version : '0.1', default_options : 'default_library=shared', meson_version : '>=0.61.2')
-project_name = 'comp-templ'
+project('srs4-driver', 'c', version : '0.1', default_options : 'default_library=shared', meson_version : '>=0.61.2')
+project_name = 'srs4-driver'
 
 # (1) enable SALLY CSP support, if needed
 #     you will have to make sure that libcsp is available!
@@ -16,21 +16,10 @@ backend_defs = []
 # (2) create the platform-specific configuration
 if platform == 'Linux'
   # (2.1) set platform-specific backend sources
-  backend_src = files(
-    'lib/sally-backends/fs/posix_backend.c',
-    'lib/sally-backends/os/posix_backend.c',
-    'lib/sally-backends/com/posix_tty_backend.c',
-    'lib/sally-backends/com/memcom_backend.c',
-  )
+  backend_src = files()
 
   # (2.2) set the definitions that can be used in code
-  backend_defs += '-DFS_BACKEND=backend_fs_posix'
-  backend_defs += '-DOS_BACKEND=backend_os_posix'
-  backend_defs += '-DCOM_BACKEND=backend_posix_tty'
-
   # (2.3) set the libraries that are needed for backends 
-  component_deps += dependency('threads')
-
   # (2.4) enable building autotest binaries for this platform (set by option)
   # (2.5) disable building commandline commands for this platform (set by option)
 
@@ -40,16 +29,37 @@ else
 endif
 
 # (3) explicitly set the sources
-client_lib_src = files('cli/src/client.c')
-server_lib_src = files('srv/src/server.c')
+client_lib_src = files(
+  'cli/src/prop-client/prop_client_helpers.c',
+  'cli/src/prop-client/prop_client.c',
+  'cli/src/prop-client/prop_query.c',
+  'cli/src/prop-client/prop_spec.c',
+  'cli/src/prop-client/srs4_props.c',
+
+  'cli/src/btp/error.c',
+  'cli/src/btp/client.c',
+  'cli/src/btp/crc32.c',
+
+  'cli/src/srs4/srs4_boot.c',
+  'cli/src/srs4/srs4_shell.c',
+)
+server_lib_src = files()
 
 # (3.1) add sources common to both client and server
 # NOTE: if lpldgen is used, do not add it here, as it is handled automatically!
-common_src = files('common/src/common.c')
+common_src = files(
+  'common/src/crc32c.c',
+  'common/src/string.c',
+)
 
 # (3.2) if client commands are to be built, specify the sources and add console dep
 if get_option('build_cmdline') != 'none'
-  client_cmd_src = files('cli/cmd/cli_cmd.c')
+  client_cmd_src = files(
+    'cli/cmd/cli_cmd.c',
+    'cli/cmd/cmd_srs4.c',
+    'cli/cmd/cmd_prop.c',
+    'cli/cmd/cmd_btp.c',
+  )
   component_deps += dependency('console')
 endif
 
@@ -63,12 +73,13 @@ endif
 # (4) set the project-specific configuration
 #     this takes options from meson_options.txt (or provided from commandline)
 #     and builds the configuration file based on the .in template
-common_config_path = 'common/include/templ'
-common_config = configuration_data()
-common_config.set('TEMPLATE_OPTION', get_option('template_option'))
+common_config_path = ''
 
 # (5) any miscellanous user configuration should go here
 #     e.g., additional dependencies based on user options
+cc = meson.get_compiler('c')
+m_dep = cc.find_library('m', required : false)
+component_deps += m_dep
 
 # (6) end of user configuration
 
@@ -157,8 +168,10 @@ if get_option('build_autotest')
 endif
 
 # install the project-specific configuration
-subdir(common_config_path)
-install_subdir(common_config_path, install_dir : get_option('includedir'), exclude_files : 'meson.build')
+if common_config_path != ''
+  subdir(common_config_path)
+  install_subdir(common_config_path, install_dir : get_option('includedir'), exclude_files : 'meson.build')
+endif
 
 # add both targets
 if class == 'client' or class == 'server'
