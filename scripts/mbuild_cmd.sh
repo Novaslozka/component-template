@@ -1,5 +1,5 @@
 #!/bin/bash
 
-meson -Denable_csp=true -Dbuild_class=client -Dbuild_autotest=false -Dbuild_cmdline=plugin build
+meson -Dbuild_class=client -Dbuild_autotest=false -Dbuild_cmdline=plugin -Ddefault_library=static build
 cd build
 ninja
