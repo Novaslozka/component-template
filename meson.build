@@ -74,8 +74,13 @@ common_config.set('TEMPLATE_OPTION', get_option('template_option'))
 # (6) end of user configuration
 
 # get the git revision
-res = run_command(['git', 'describe', '--always', '--dirty'], capture : true, check : true)
+gitrev = 'unknown'
+res = run_command(['git', 'describe', '--always', '--dirty'], capture : true, check : false)
+if res.returncode() != 0
+  warning('Failed to parse git revision, most likely not running in git repository!')
+else
 gitrev = res.stdout()
+endif
 
 add_project_arguments(
   '-DVERSION="@0@"'.format(meson.project_version()),
