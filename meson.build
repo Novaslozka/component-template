@@ -65,6 +65,7 @@ endif
 # (4) set the project-specific configuration
 #     this takes options from meson_options.txt (or provided from commandline)
 #     and builds the configuration file based on the .in template
+#     when unused, set common_config_path = ''
 common_config_path = 'common/include/templ'
 common_config = configuration_data()
 common_config.set('TEMPLATE_OPTION', get_option('template_option'))
@@ -166,8 +167,10 @@ if get_option('build_autotest')
 endif
 
 # install the project-specific configuration
-subdir(common_config_path)
-install_subdir(common_config_path, install_dir : get_option('includedir'), exclude_files : 'meson.build')
+if common_config_path != ''
+  subdir(common_config_path)
+  install_subdir(common_config_path, install_dir : get_option('includedir'), exclude_files : 'meson.build')
+endif
 
 # add both targets
 if class == 'client' or class == 'server'
