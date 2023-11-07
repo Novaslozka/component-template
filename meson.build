@@ -12,6 +12,7 @@ endif
 platform = get_option('build_platform')
 class = get_option('build_class')
 backend_defs = []
+extra_inc_dirs = []
 backend_src = files()
 
 # (2) create the platform-specific configuration
@@ -104,6 +105,7 @@ warning('Unknown build class: "' + class + '", build will likely fail!')
 # - combined_bin_src: sources for the combined autotest binary
 
 inc_dirs = ['common/include']
+inc_dirs += extra_inc_dirs
 lib_src = backend_src + common_src
 bin_src = backend_src + common_src
 lib_name = project_name
