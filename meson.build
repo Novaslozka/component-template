@@ -94,7 +94,9 @@ add_project_arguments(
 component_deps += dependency('srv-abs')
 
 # check build class
-warning('Unknown build class: "' + class + '", build will likely fail!')
+if class != 'client' and class != 'server' and class != 'combined'
+  warning('Unknown build class: "' + class + '", build will likely fail!')
+endif
 
 # set paths to the different build classes
 # since meson doesn't allow globbing, there are several variables to keep track of source files:
