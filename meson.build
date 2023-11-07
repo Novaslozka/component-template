@@ -36,7 +36,7 @@ if platform == 'Linux'
   # (2.5) disable building commandline commands for this platform (set by option)
 
 else
-  # TODO error here (unsupported platform)
+  warning('Unknown platform: "' + platform + '", build will likely fail!')
 
 endif
 
@@ -79,7 +79,7 @@ res = run_command(['git', 'describe', '--always', '--dirty'], capture : true, ch
 if res.returncode() != 0
   warning('Failed to parse git revision, most likely not running in git repository!')
 else
-gitrev = res.stdout()
+  gitrev = res.stdout()
 endif
 
 add_project_arguments(
@@ -91,7 +91,8 @@ add_project_arguments(
 # SALLY is always needed
 component_deps += dependency('srv-abs')
 
-# TODO check build class
+# check build class
+warning('Unknown build class: "' + class + '", build will likely fail!')
 
 # set paths to the different build classes
 # since meson doesn't allow globbing, there are several variables to keep track of source files:
