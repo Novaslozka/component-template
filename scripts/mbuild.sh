@@ -1,5 +1,5 @@
 #!/bin/bash
 
-meson build
+meson setup build
 cd build
 ninja

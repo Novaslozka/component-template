@@ -1,7 +1,7 @@
 #!/bin/bash
 
 prefix="/opt/vzlu"
-meson --prefix "$prefix" \
+meson setup --prefix "$prefix" \
  --libdir lib \
  --pkg-config-path "$prefix/lib/pkgconfig" \
  -Dbuild_class=client \
