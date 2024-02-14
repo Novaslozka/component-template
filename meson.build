@@ -1,12 +1,18 @@
 # (0) choose an appropriate name for the component
 project('comp-templ', 'c', version : '0.1.0.0', default_options : 'default_library=shared', meson_version : '>=0.61.2')
 project_name = 'comp-templ'
+cc = meson.get_compiler('c')
 
 # (1) enable SALLY CSP support, if needed
-#     you will have to make sure that libcsp is available!
+#     you will have to make sure that libcsp is available,
+#     either system-wide or as static library!
 component_deps = []
 if get_option('enable_csp')
-  component_deps += dependency('csp')
+  if get_option('static_libpath') == ''
+    component_deps += dependency('csp')
+  else
+    component_deps += cc.find_library('csp', dirs : get_option('static_libpath'))
+  endif
 endif
 
 platform = get_option('build_platform')
@@ -52,7 +58,11 @@ common_src = files('common/src/common.c')
 # (3.2) if client commands are to be built, specify the sources and add console dep
 if get_option('build_cmdline') != 'none'
   client_cmd_src = files('cli/cmd/cli_cmd.c')
-  component_deps += dependency('console')
+  if get_option('static_libpath') == ''
+    component_deps += dependency('console')
+  else
+    component_deps += cc.find_library('console', dirs : get_option('static_libpath'))
+  endif
 endif
 
 # (3.3) if some autotests are to be built, specify the sources
@@ -91,7 +101,11 @@ add_project_arguments(
 )
 
 # SALLY is always needed
-component_deps += dependency('srv-abs')
+if get_option('static_libpath') == ''
+  component_deps += dependency('srv-abs')
+else
+  component_deps += cc.find_library('srv-abs', dirs : get_option('static_libpath'))
+endif
 
 # check build class
 if class != 'client' and class != 'server' and class != 'combined'
@@ -141,14 +155,21 @@ endif
 
 # configure lpldgen if it is used
 if get_option('enable_lpldgen')
-  pld = dependency('pld')
-  component_deps += pld
 
-  if get_option('build_cmdline') != 'none'
-    component_deps += dependency('commands')
+  # if pld_path is set, then we're using pre-built lpldgen
+  if get_option('pld_path') != ''
+    lpldgen = 'lpldgen'
+  else
+    pld = dependency('pld')
+    component_deps += pld
+
+    if get_option('build_cmdline') != 'none'
+      component_deps += dependency('commands')
+    endif
+
+    lpldgen = find_program(pld.get_variable('lpldgen'), native : true)
   endif
 
-  lpldgen = find_program(pld.get_variable('lpldgen'), native : true)
   pld_src = custom_target(
     'pld_' + project_name,
     input : 'common/lpldgen/config.json',
