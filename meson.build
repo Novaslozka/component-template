@@ -1,5 +1,5 @@
 # (0) choose an appropriate name for the component
-project('comp-templ', 'c', version : '0.1', default_options : 'default_library=shared', meson_version : '>=0.61.2')
+project('comp-templ', 'c', version : '0.1.0.0', default_options : 'default_library=shared', meson_version : '>=0.61.2')
 project_name = 'comp-templ'
 
 # (1) enable SALLY CSP support, if needed
@@ -77,7 +77,7 @@ common_config.set('TEMPLATE_OPTION', get_option('template_option'))
 
 # get the git revision
 gitrev = 'unknown'
-res = run_command(['git', 'describe', '--always', '--dirty'], capture : true, check : false)
+res = run_command(['git', 'describe', '--always', '--dirty', '--abbrev=7', '--exclude=*'], capture : true, check : false)
 if res.returncode() != 0
   warning('Failed to parse git revision, most likely not running in git repository!')
 else
