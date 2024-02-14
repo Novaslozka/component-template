@@ -1,0 +1,6 @@
+#ifndef _INCLUDE_CONF_TEMPLATE_H
+#define _INCLUDE_CONF_TEMPLATE_H
+
+#cmakedefine TEMPLATE_OPTION @TEMPLATE_OPTION@
+
+#endif
