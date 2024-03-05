@@ -158,7 +158,7 @@ if get_option('enable_lpldgen')
 
   # if pld_path is set, then we're using pre-built lpldgen
   if get_option('pld_path') != ''
-    lpldgen = 'lpldgen'
+    lpldgen = find_program('lpldgen', native : true)
   else
     pld = dependency('pld')
     component_deps += pld
