@@ -1,5 +1,5 @@
 // app headers
-#include "template/client.h"
+#include "template/client_com.h"
 
 // standard libraries
 #include <string.h>
@@ -14,9 +14,16 @@
 #include "packets.h"
 
 // SALLY backends provided by the library user
+// usually not all of those are necessary for the client
 static service_fs_t* client_fs = NULL;
 static service_os_t* client_os = NULL;
 static service_com_t* client_com = NULL;
+
+// forward declaration of low-level send/receive functions
+static void client_cmd_send(service_com_handle_t hcom, uint8_t cmd_id, uint8_t* data, uint8_t data_len);
+static size_t client_rpl_get(service_com_handle_t hcom, uint8_t* buff, size_t target_len);
+
+// implementation of the actual client-side C API
 
 int16_t client_ping(service_com_handle_t hcom, char* rpl) {
   // send a ping
@@ -33,11 +40,11 @@ int16_t client_ping(service_com_handle_t hcom, char* rpl) {
 
 int16_t client_echo(service_com_handle_t hcom, char* out, char* in) {
   // send the echo request
-  size_t echo_len = strlen(in);
-  client_cmd_send(hcom, DRIVER_TEMPLATE_CMD_ECHO, (uint8_t*)in, echo_len);
+  size_t echo_len = strlen(out);
+  client_cmd_send(hcom, DRIVER_TEMPLATE_CMD_ECHO, (uint8_t*)out, echo_len);
 
   // get the reply
-  size_t ret = client_rpl_get(hcom, (uint8_t*)out, echo_len);
+  size_t ret = client_rpl_get(hcom, (uint8_t*)in, echo_len);
   if(ret != echo_len) {
     return(-1);
   }

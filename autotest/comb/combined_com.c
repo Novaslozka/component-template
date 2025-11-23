@@ -1,6 +1,6 @@
 // static library headers
-#include <template/client.h>
-#include <template/server.h>
+#include <template/client_com.h>
+#include <template/server_com.h>
 
 // standard libraries
 #include <string.h>
@@ -17,7 +17,7 @@
 // munit testing framework
 #include "munit.h"
 
-// SALLY backends - set by CMake
+// SALLY backends - set by build configuration tool
 extern service_fs_t FS_BACKEND;
 service_fs_t* fs = &FS_BACKEND;
 extern service_os_t OS_BACKEND;
@@ -122,7 +122,7 @@ test_echo(const MunitParameter params[], void* fixture) {
   // send an echo request and get the reply
   char echo_out_buff[] = "Echo this!";
   char echo_in_buff[16] = { 0 };
-  int16_t ret = client_echo(hcom, echo_in_buff, echo_out_buff);
+  int16_t ret = client_echo(hcom, echo_out_buff, echo_in_buff);
 
   // check we have the data and that it matches the expected "Hello World!" reply
   munit_assert_int(ret, ==, 0);

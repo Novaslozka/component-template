@@ -3,23 +3,27 @@
 set -e
 
 if [[ "$#" -lt 2 ]]; then
-  echo "Usage: $0 <server/client> <platform> [build arguments]"
+  echo "Usage: $0 <server/client/combined> <platform> [build arguments]"
   exit 1
 fi
 
-# class is either server or client
+# class is either server, client or combined
 CLASS="$1"
 
 # this is the build platform (Linux, Debug, STM32 etc.)
 PLATFORM="$2"
 
-# build flags is everything else, this is passed directly to CMake
+# build flags is everything else, this is passed directly
 BUILD_FLAGS="${@:3}"
 echo "$BUILD_FLAGS"
 
-mkdir -p build/$CLASS-$PLATFORM
-cd build/$CLASS-$PLATFORM
+# create the build output directory
+BUILD_PATH=build/$CLASS-$PLATFORM
+mkdir -p $BUILD_PATH
 
-cmake -DCMAKE_BUILD_PLATFORM=$PLATFORM -DCMAKE_BUILD_CLASS=$CLASS -G "CodeBlocks - Unix Makefiles" $BUILD_FLAGS ../..
+# generate the meson file
+./tools/meson/mgen.sh > $PWD/meson.build
 
-make -j4
+# run meson and then build with ninja
+meson setup -Dbuild_platform=$PLATFORM -Dbuild_class=$CLASS $BUILD_FLAGS $BUILD_PATH
+cd $BUILD_PATH && ninja

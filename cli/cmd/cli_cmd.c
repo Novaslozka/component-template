@@ -1,5 +1,5 @@
 #include "template/cmd_cli.h"
-#include "template/client.h"
+#include "template/client_com.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -136,6 +136,7 @@ static int cli_port(console_ctx_t *ctx, cmd_signature_t *reg) {
     hcom = com->com_handle_malloc();
   }
 
+  // the example client does not use filesystem nor OS backends
   client_set_backends(NULL, NULL, com);
 
   service_com_conf_t conf = { .speed = 0 };

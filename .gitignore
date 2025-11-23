@@ -13,3 +13,6 @@ autotest/logs/*
 # Meson subproject folders (skips .wrap files)
 subprojects/*/
 
+# generated meson file
+meson.build
+

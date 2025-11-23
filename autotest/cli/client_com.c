@@ -1,5 +1,5 @@
 // static library headers
-#include <template/client.h>
+#include <template/client_com.h>
 
 // standard libraries
 #include <string.h>
@@ -13,7 +13,7 @@
 // headers shared for both client and server
 #include "packets.h"
 
-// SALLY backends - set by CMake
+// SALLY backends - set by build configuration tool
 extern service_fs_t FS_BACKEND;
 service_fs_t* fs = &FS_BACKEND;
 extern service_os_t OS_BACKEND;
@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
   // send some server requests
   for(uint8_t i = 0; i < 10; i++) {
     // send a ping
-    uint8_t ping_buff[16];
+    char ping_buff[16];
     if(client_ping(hcom, ping_buff) == 0) {
       printf("Ping #%d got reply: %s\n", i, ping_buff);
     }

@@ -1,5 +1,5 @@
 // static library headers
-#include <template/server.h>
+#include <template/server_com.h>
 
 // standard libraries
 #include <string.h>
@@ -13,7 +13,7 @@
 // headers shared for both client and server
 #include "packets.h"
 
-// SALLY backends - set by CMake
+// SALLY backends - set by build configuration tool
 extern service_fs_t FS_BACKEND;
 service_fs_t* fs = &FS_BACKEND;
 extern service_os_t OS_BACKEND;

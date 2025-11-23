@@ -1,5 +1,5 @@
-#ifndef _DRIVER_TEMPLATE_CLIENT_H
-#define _DRIVER_TEMPLATE_CLIENT_H
+#ifndef DRIVER_TEMPLATE_CLIENT_H
+#define DRIVER_TEMPLATE_CLIENT_H
 
 /*!  \file client.h 
 *    \brief This template header contains template client commands
@@ -39,20 +39,11 @@ int16_t client_echo(service_com_handle_t hcom, char* out, char* in);
 */
 int16_t client_kill_server(service_com_handle_t hcom);
 
-// these are the low-level functions
-void client_cmd_send(service_com_handle_t hcom, uint8_t cmd_id, uint8_t* data, uint8_t data_len);
-/*!
-*   \brief Function that waits for an answer from the server on the COM port
-*   \param hcom COM port handle
-*   \param buff Data buffer - Data to be received from the server
-*   \param target_len Expected length of the data buffer
-*/
-size_t client_rpl_get(service_com_handle_t hcom, uint8_t* buff, size_t target_len);
 /*!  
-*   \brief This function is necessary to provide proper backends to the client
-*   \param fs Pointer to the filesystem backend
-*   \param os Pointer to the operating system backend
-*   \param com Pointer to the COM port backend
+  \brief This function is necessary to provide proper backends to the client
+  \param fs Pointer to the filesystem backend
+  \param os Pointer to the operating system backend
+  \param com Pointer to the COM port backend
 */
 void client_set_backends(service_fs_t* fs, service_os_t* os, service_com_t* com);
 
