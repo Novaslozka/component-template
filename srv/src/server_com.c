@@ -1,8 +1,9 @@
 // app headers
-#include "template/server.h"
+#include "template/server_com.h"
 
 // standard libraries
 #include <string.h>
+#include <stdio.h>
 
 // SALLY libraries
 #include <service/service.h>
@@ -33,7 +34,7 @@ int server_process_cmd(service_com_handle_t hcom, uint8_t* buff, size_t len) {
     } break;
 
     case DRIVER_TEMPLATE_CMD_ECHO: {
-      // on echo, sned everything backeexcept the command byte
+      // on echo, send everything back, except the command byte
       uint8_t* pos = (uint8_t*)strstr((char*)buff, DRIVER_TEMPLATE_CMD_LINE_END);
       if(pos != NULL) {
         size_t echo_len = pos-buff-1;

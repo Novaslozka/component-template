@@ -3,15 +3,43 @@
 // typically, these are used for defining CSP packets
 // however, lpldgen can also be used for other binary data
 
-/// Example request to CSP node 1, port 2
+// the following encodes the same packet structures as packets.h
+// and are only intended of the example!
+
+/// Example ping request to CSP node 1, port 2 (custom one, not the CSP built-in ping)
 +to 1:2
-struct Request {
-  u8 byte_field
-  float float_field
+struct Ping {
+  +named CMD_ID
+  u8 =0x00
 }
 
-/// Example reply to Request
+/// Reply to the ping request
 +from 1:2
-struct Reply {
-  i32 int_field
+struct Pong {
+  +named CMD_ID
+  u8 =0x00
+  char text[16]
+}
+
+/// Example echo request
++to 1:2
+struct Echo_Req {
+  +named CMD_ID
+  u8 =0x01
+  char text[...]
+}
+
+/// Example echo reply
++from 1:2
+struct Echo_Rpl {
+  +named CMD_ID
+  u8 =0x01
+  char text[...]
+}
+
+/// Kill request
++to 1:2
+struct Kill {
+  +named CMD_ID
+  u8 =0x02
 }

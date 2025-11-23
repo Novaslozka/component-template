@@ -1,5 +1,5 @@
 {
-  "name": "Name",
+  "name": "Driver_Template",
   "id_range": [ 1, 10 ],
   "specs": [ "cmds.txt" ],
   "variables": { }

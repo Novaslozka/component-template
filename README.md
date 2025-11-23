@@ -19,27 +19,39 @@ $ git push -u origin --tags
 
 After this, you can use this template for your SW driver implementation. Usually this will involve:
 
-1. Updating the configuration file (meson.build or CMakeLists.txt) to fit your target platform, backends and source files. The numbered steps in the file will help you get started, however, knowledge of the build system is assumed.
+1. Updating the configuration file (conf.meson.build) to fit your target platform, backends and source files. The numbered steps in the file will help you get started, however, knowledge of the build system is assumed.
 2. Adding source files for client, server, autotests, commands etc.
 3. Building and testing your client/server or deploying command plugins.
 
 ## Build
 
-There are two options how to build the template and its tests: Meson build (preferred) and CMake (legacy). Building by Meson is done by executing the build script `./scripts/mbuild.sh`. When building with Meson, the following dependencies must be available as shared library:
+The simplest way to build all the different configurations is to run the recipes from the `Makefile`. The fastest test to check everything builds correctly is `make test`, which will build and execute a complete test of client and server communicating through an emulated COM port. To build the CSP version of client and server, use `make csp` and to test it, run `make csp-test`.
 
-* lpldgen: https://gitlab.com/vzlu/sw/lpldgen
-* libcommands: https://gitlab.com/vzlu/sw/libcommands
+The following dependencies are needed:
+
+* meson >=0.61.2 (can be installed with `pip install meson` - the version in apt packages is usually outdated!)
+* ninja, gcc and make
+* submodules to this repository, which can be downloaded with `git submodule update --init`
+* cargo (to build lpldgen, if it is not available as shared library)
+
+In addition there are the following VZLU dependencies, which are handled automatically via meson subprojects. If you do not have them installed as sahred library (e.g. because you are developing VCOM plugins), they will be downloaded locally for this project only.
+
+* lpldgen (payload parser/generator): https://gitlab.com/vzlu/sw/lpldgen
 * libcsp (VZLU fork): https://gitlab.com/vzlu/sw/libcsp
-* libconsole: https://gitlab.com/vzlu/sw/lib-console
+* SALLY (abstraction layer for software services): https://gitlab.com/vzlu/sw/sally
 
-To install them as shared library into the default location (e.g., `/usr/local/lib/x86_64-linux-gnu/` on Debian-based Linux), clone the repository and then run the following:
-
-```
-meson build
-cd build && ninja install
-```
-
-Building by CMake can be done by targets in the provided Makefile (e.g., `make test`), but it should be noted CMake support is for legacy projects only and its use is strongly discouraged for new development.
+## Contents
+* `autotest/` - contains source files for autoamted tests. These are also useful as simple examples, as each automated test needs to have everything needed to execute the actual software component.
+* `build/` - build outputs and executable binaries
+* `cli/` - client-side source files and headers
+* `common/` - source files and headers shared between client and server (typically packet structure definitions)
+* `dev/` - emulated COM ports
+* `doc/` - Doxygen-generated documentation
+* `lib/` - libraries which are not meson subprojects
+* `scripts/` - simple helper scripts for building, cleaning and crating emulated COM ports
+* `srv/` - server-side source files and headers
+* `subprojects/` - meson subprojects (managed dependencies)
+* `tools/` - submodule which contains helper scripts for building and static code analysis
 
 ## Documentation
 
