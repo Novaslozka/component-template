@@ -8,6 +8,7 @@ option('build_autotest', type : 'boolean', value : true, description : 'Enable b
 option('build_cmdline', type : 'combo', choices : ['none', 'static', 'plugin'], value : 'none', description : 'Enable building commandline commands on the selected platform')
 option('install_lib', type : 'boolean', value : false, description : 'Install the client/server library')
 option('static_libpath', type : 'string', value : '', description : 'Path to static dependencies')
+option('static_incpath', type : 'string', value : '', description : 'Path to headers if using static dependencies')
 option('pld_path', type : 'string', value : '', description : 'Path to pre-build lpldgen library headers (payloads.h etc.)')
 
 # possible additional user options
