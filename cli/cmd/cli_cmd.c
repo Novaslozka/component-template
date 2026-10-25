@@ -6,6 +6,8 @@
 #include <string.h>
 #include <console/cmddef.h>
 
+#include "./commmon/include/packets.h"
+
 // SALLY backends - set during build
 extern service_com_t COM_BACKEND;
 service_com_t* com = &COM_BACKEND;
@@ -18,6 +20,7 @@ static int cli_ping(console_ctx_t *ctx, cmd_signature_t *reg);
 static int cli_echo(console_ctx_t *ctx, cmd_signature_t *reg);
 static int cli_kill(console_ctx_t *ctx, cmd_signature_t *reg);
 static int cli_port(console_ctx_t *ctx, cmd_signature_t *reg);
+static int cli_test(console_ctx_t *ctx, cmd_signature_t *reg);
 
 // the interface for shared libraries
 #if defined(SHARED_BUILD)
@@ -45,6 +48,8 @@ void register_cli_example_cmds(void) {
   console_cmd_register(cli_echo, "cli echo");
   console_cmd_register(cli_kill, "cli kill");
   console_cmd_register(cli_port, "cli port");
+  
+  console_cmd_register(cli_test, "cli test");
 }
 
 // implementations of all commands follow
@@ -142,4 +147,58 @@ static int cli_port(console_ctx_t *ctx, cmd_signature_t *reg) {
   service_com_conf_t conf = { .speed = 0 };
   com->open(hcom, (service_com_device_t)args.port->sval[0], &conf);
   return CONSOLE_OK;
+}
+
+
+
+
+
+
+
+
+static int cli_test(console_ctx_t *ctx, cmd_signature_t *reg) {
+  EMPTY_CMD_SETUP("Send test command to server")
+
+  if(!hcom) {
+    console_printf("No port set!\n");
+    return CONSOLE_ERR_NOT_POSSIBLE;
+  }
+
+  uint8_t cmd = DRIVER_TEMPLATE_CMD_TEST;
+  com->write(hcom, &cmd, 1);
+
+  char response_buff[64] = { 0 };
+  int read_bytes = com->read(hcom, response_buff, sizeof(response_buff) - 1);
+
+  if (read_bytes > 0) {
+    console_printf("Server odpovedel: %s\n", response_buff);
+    return CONSOLE_OK;
+  } else {
+    console_printf("Chyba: Server neodpovedel\n");
+    return CONSOLE_ERR_IO;
+  }
+}
+
+
+static int snake_up(console_ctx_t *ctx, cmd_signature_t *reg) {
+  EMPTY_CMD_SETUP("Moves the snake up")
+
+  if(!hcom) {
+    console_printf("No port set!\r\n");
+    return CONSOLE_ERR_NOT_POSSIBLE;
+  }
+
+  uint8_t cmd = DRIVER_TEMPLATE_SNAKE_UP;
+  com->write(hcom, &cmd, 1);
+
+  char response_buff[64] = { 0 };
+  int read_bytes = com->read(hcom, response_buff, sizeof(response_buff) - 1);
+
+  if (read_bytes > 0) {
+    console_printf("Screen: %s\r\n", response_buff);
+    return CONSOLE_OK;
+  } else {
+    console_printf("Chyba: Server neodpovedel\n");
+    return CONSOLE_ERR_IO;
+  }
 }

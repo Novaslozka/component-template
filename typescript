@@ -1,0 +1,31 @@
+Script started on 2026-10-25 22:26:49+01:00 [TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="80" LINES="24"]
+[?2004h]0;jirka@13fie: ~/Desktop/yspace/component-template[01;32mjirka@13fie[00m:[01;34m~/Desktop/yspace/component-template[00m$ sudo apt update && sudo apt install github-desktop[C[A]0;jirka@13fie: ~/Desktop/yspace/component-template[01;32mjirka@13fie[00m:[01;34m~/Desktop/yspace/component-template[00m$ [K
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Ccd scripts/
+[?2004l[?2004h]0;jirka@13fie: ~/Desktop/yspace/component-template/scripts[01;32mjirka@13fie[00m:[01;34m~/Desktop/yspace/component-template/scripts[00m$ ./
+build.sh            clean.sh            serial_loopback.sh
+]0;jirka@13fie: ~/Desktop/yspace/component-template/scripts[01;32mjirka@13fie[00m:[01;34m~/Desktop/yspace/component-template/scripts[00m$ ./serial_loopback.sh D[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[Kcd ..
+[?2004l[?2004h]0;jirka@13fie: ~/Desktop/yspace/component-template[01;32mjirka@13fie[00m:[01;34m~/Desktop/yspace/component-template[00m$ cd [K[K[Kcd 
+autotest/    cli/         dev/         .git/        scripts/     subprojects/
+build/       common/      doc/         lib/         srv/         tools/
+]0;jirka@13fie: ~/Desktop/yspace/component-template[01;32mjirka@13fie[00m:[01;34m~/Desktop/yspace/component-template[00m$ cd srv/
+include/ src/     
+]0;jirka@13fie: ~/Desktop/yspace/component-template[01;32mjirka@13fie[00m:[01;34m~/Desktop/yspace/component-template[00m$ cd srv/[K[K[K[Kbuild/server-Linux/
+common/                 libcomp-templ-srv.so.p/ meson-logs/
+comp-templ-srv-bin.p/   meson-info/             meson-private/
+]0;jirka@13fie: ~/Desktop/yspace/component-template[01;32mjirka@13fie[00m:[01;34m~/Desktop/yspace/component-template[00m$ cd build/server-Linux/
+common/                 libcomp-templ-srv.so.p/ meson-logs/
+comp-templ-srv-bin.p/   meson-info/             meson-private/
+]0;jirka@13fie: ~/Desktop/yspace/component-template[01;32mjirka@13fie[00m:[01;34m~/Desktop/yspace/component-template[00m$ cd build/server-Linux/
+common/                 libcomp-templ-srv.so.p/ meson-logs/
+comp-templ-srv-bin.p/   meson-info/             meson-private/
+]0;jirka@13fie: ~/Desktop/yspace/component-template[01;32mjirka@13fie[00m:[01;34m~/Desktop/yspace/component-template[00m$ cd build/server-Linux/comp-templ-srv-bin.p/^C[?2004l[?2004h[?2004l
+[?2004h]0;jirka@13fie: ~/Desktop/yspace/component-template[01;32mjirka@13fie[00m:[01;34m~/Desktop/yspace/component-template[00m$ make clean
+[?2004l./scripts/clean.sh
+[?2004h]0;jirka@13fie: ~/Desktop/yspace/component-template[01;32mjirka@13fie[00m:[01;34m~/Desktop/yspace/component-template[00m$ cd ..
+[?2004l[?2004h]0;jirka@13fie: ~/Desktop/yspace[01;32mjirka@13fie[00m:[01;34m~/Desktop/yspace[00m$ cd ..7[K
+[?2004l[?2004h]0;jirka@13fie: ~/Desktop[01;32mjirka@13fie[00m:[01;34m~/Desktop[00m$ rm -rf [K[K[K[Kcomponent-template/
+[?2004lrm: cannot remove 'component-template/': Is a directory
+[?2004h]0;jirka@13fie: ~/Desktop[01;32mjirka@13fie[00m:[01;34m~/Desktop[00m$ rm component-template/-component-template/rcomponent-template/ component-template/
+[?2004lrm: remove write-protected regular file 'component-template/.git/objects/pack/pack-af76b4bd7645f2c2bdd8afdff24237669e26bc13.pack'? ^C
+[?2004h]0;jirka@13fie: ~/Desktop[01;32mjirka@13fie[00m:[01;34m~/Desktop[00m$ rm -r component-template/f component-template/
+[?2004l[?2004h]0;jirka@13fie: ~/Desktop[01;32mjirka@13fie[00m:[01;34m~/Desktop[00m$ cp yspaceco[K[K(/[K[K/component-template/-yspace/component-template/ryspace/component-template/

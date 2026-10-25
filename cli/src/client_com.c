@@ -97,3 +97,44 @@ void client_set_backends(service_fs_t* fs, service_os_t* os, service_com_t* com)
   client_os = os;
   client_com = com;
 }
+
+
+
+
+int16_t client_test(service_com_handle_t hcom, char* rpl) {
+  
+  client_cmd_send(hcom, DRIVER_TEMPLATE_CMD_TEST, NULL, 0);
+
+  size_t target_len = strlen("test\r\n");
+  size_t ret = client_rpl_get(hcom, (uint8_t*)rpl, target_len);
+  if(ret != target_len) {
+    return(-1);
+  }
+
+  rpl[ret] = '\0';
+  return(0);
+}
+
+
+
+int16_t snake_com(service_com_handle_t hcom, uint8_t direction, char* rpl) {
+  client_cmd_send(hcom, DRIVER_TEMPLATE_SNAKE, &direction, 1);
+
+  size_t target_len = 64;
+  size_t read_bytes = 0;
+  
+  while(read_bytes < target_len) {
+    size_t res = client_com->read(hcom, rpl + read_bytes, target_len - read_bytes);
+    if(res > 0) {
+      read_bytes += res;
+    } else {
+      break;
+    }
+  }
+
+  if(read_bytes != target_len) {
+    return -1;
+  }
+
+  return 0;
+}

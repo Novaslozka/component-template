@@ -21,6 +21,19 @@
 #define DRIVER_TEMPLATE_CMD_ECHO              (0x01)
 #define DRIVER_TEMPLATE_CMD_ECHO_MAX_LEN      (64)
 #define DRIVER_TEMPLATE_CMD_KILL              (0x02)
+
+
+#define DRIVER_TEMPLATE_CMD_TEST              (0x05)
+#define DRIVER_TEMPLATE_CMD_TEST_RPL          "test"
+
+#define DRIVER_TEMPLATE_SNAKE                 (0x10) 
+
+#define SNAKE_DIR_UP                          (0x01)
+#define SNAKE_DIR_DOWN                        (0x02)
+#define SNAKE_DIR_LEFT                        (0x03)
+#define SNAKE_DIR_RIGHT                       (0x04)
+
+
 /*!
   @}
 */

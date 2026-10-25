@@ -47,4 +47,7 @@ int16_t client_kill_server(service_com_handle_t hcom);
 */
 void client_set_backends(service_fs_t* fs, service_os_t* os, service_com_t* com);
 
+int16_t client_test(service_com_handle_t hcom, char* rpl);
+
+int16_t snake_com(service_com_handle_t hcom, uint8_t direction, char* rpl);
 #endif
